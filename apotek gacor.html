@@ -1,0 +1,1125 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Kasir Apotek Sehat</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2a7f62;
+        }
+        
+        .datetime {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .main-content {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .left-panel {
+            flex: 1;
+        }
+        
+        .right-panel {
+            width: 350px;
+        }
+        
+        .search-box {
+            margin-bottom: 20px;
+        }
+        
+        .search-box input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        
+        .product-list {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            height: 400px;
+            overflow-y: auto;
+        }
+        
+        .product-item {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .product-item:hover {
+            background-color: #f9f9f9;
+        }
+        
+        .product-item .name {
+            font-weight: bold;
+        }
+        
+        .product-item .price {
+            color: #2a7f62;
+            font-weight: bold;
+        }
+        
+        .product-item .stock {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .cart {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .cart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .cart-items {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 15px;
+        }
+        
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px dashed #eee;
+        }
+        
+        .cart-item .info {
+            flex: 1;
+        }
+        
+        .cart-item .quantity-control {
+            display: flex;
+            align-items: center;
+        }
+        
+        .cart-item .quantity-control button {
+            width: 25px;
+            height: 25px;
+            border: 1px solid #ddd;
+            background-color: #f5f5f5;
+            cursor: pointer;
+        }
+        
+        .cart-item .quantity-control input {
+            width: 40px;
+            text-align: center;
+            margin: 0 5px;
+            border: 1px solid #ddd;
+            padding: 3px;
+        }
+        
+        .cart-item .remove {
+            color: #ff5252;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+        
+        .cart-total {
+            font-weight: bold;
+            font-size: 18px;
+            text-align: right;
+            margin-top: 10px;
+        }
+        
+        .payment-section {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+        }
+        
+        .payment-methods {
+            margin-bottom: 15px;
+        }
+        
+        .payment-methods label {
+            display: block;
+            margin-bottom: 8px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        
+        .btn {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        .btn-primary {
+            background-color: #2a7f62;
+            color: white;
+            width: 100%;
+        }
+        
+        .btn-primary:hover {
+            background-color: #1f6b4e;
+        }
+        
+        .btn-danger {
+            background-color: #ff5252;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background-color: #e04141;
+        }
+        
+        .tabs {
+            display: flex;
+            margin-bottom: 15px;
+        }
+        
+        .tab {
+            padding: 10px 15px;
+            cursor: pointer;
+            border: 1px solid #ddd;
+            background-color: #f5f5f5;
+            border-bottom: none;
+            margin-right: 5px;
+            border-radius: 5px 5px 0 0;
+        }
+        
+        .tab.active {
+            background-color: white;
+            border-bottom: 1px solid white;
+            margin-bottom: -1px;
+            color: #2a7f62;
+            font-weight: bold;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .prescription-form, .compounding-form {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+        
+        .prescription-preview {
+            margin-top: 15px;
+            padding: 10px;
+            border: 1px dashed #ccc;
+            background-color: #fff;
+            border-radius: 5px;
+        }
+        
+        .compounding-items {
+            margin-top: 10px;
+        }
+        
+        .compounding-item {
+            display: flex;
+            margin-bottom: 10px;
+        }
+        
+        .compounding-item select, .compounding-item input {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        
+        .compounding-item select {
+            flex: 2;
+            margin-right: 10px;
+        }
+        
+        .compounding-item input {
+            flex: 1;
+        }
+        
+        .add-compounding-item {
+            background-color: #2a7f62;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 5px;
+        }
+        
+        .remove-compounding-item {
+            background-color: #ff5252;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: 10px;
+            padding: 0 8px;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            width: 500px;
+            max-width: 90%;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .close-modal {
+            font-size: 24px;
+            cursor: pointer;
+        }
+        
+        .receipt {
+            font-family: 'Courier New', Courier, monospace;
+            white-space: pre;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">APOTEK SEHAT</div>
+            <div class="datetime" id="datetime">Senin, 1 Januari 2024 10:00:00</div>
+        </header>
+        
+        <div class="main-content">
+            <div class="left-panel">
+                <div class="tabs">
+                    <div class="tab active" data-tab="regular">Obat Biasa</div>
+                    <div class="tab" data-tab="prescription">Resep Dokter</div>
+                    <div class="tab" data-tab="compounding">Obat Racikan</div>
+                </div>
+                
+                <div class="tab-content active" id="regular-tab">
+                    <div class="search-box">
+                        <input type="text" id="search" placeholder="Cari obat...">
+                    </div>
+                    <div class="product-list" id="product-list">
+                        <!-- Produk akan dimuat di sini -->
+                    </div>
+                </div>
+                
+                <div class="tab-content" id="prescription-tab">
+                    <div class="prescription-form">
+                        <h3>Input Resep Dokter</h3>
+                        <div class="form-group">
+                            <label for="patient-name">Nama Pasien</label>
+                            <input type="text" id="patient-name" placeholder="Nama pasien">
+                        </div>
+                        <div class="form-group">
+                            <label for="doctor-name">Nama Dokter</label>
+                            <input type="text" id="doctor-name" placeholder="Nama dokter">
+                        </div>
+                        <div class="form-group">
+                            <label for="prescription-number">Nomor Resep</label>
+                            <input type="text" id="prescription-number" placeholder="Nomor resep">
+                        </div>
+                        <div class="form-group">
+                            <label for="prescription-date">Tanggal Resep</label>
+                            <input type="date" id="prescription-date">
+                        </div>
+                        <button class="btn btn-primary" id="add-prescription">Tambahkan ke Keranjang</button>
+                    </div>
+                    
+                    <div class="search-box">
+                        <input type="text" id="prescription-search" placeholder="Cari obat di resep...">
+                    </div>
+                    <div class="product-list" id="prescription-product-list">
+                        <!-- Produk resep akan dimuat di sini -->
+                    </div>
+                </div>
+                
+                <div class="tab-content" id="compounding-tab">
+                    <div class="compounding-form">
+                        <h3>Obat Racikan</h3>
+                        <div class="form-group">
+                            <label for="compounding-name">Nama Racikan</label>
+                            <input type="text" id="compounding-name" placeholder="Contoh: Obat Batuk Hitam">
+                        </div>
+                        <div class="form-group">
+                            <label for="compounding-instruction">Aturan Pakai</label>
+                            <input type="text" id="compounding-instruction" placeholder="Contoh: 3x1 sehari setelah makan">
+                        </div>
+                        
+                        <h4>Komposisi Racikan</h4>
+                        <div class="compounding-items" id="compounding-items">
+                            <div class="compounding-item">
+                                <select class="compounding-drug">
+                                    <option value="">Pilih obat</option>
+                                    <!-- Obat akan dimuat di sini -->
+                                </select>
+                                <input type="number" class="compounding-quantity" placeholder="Jumlah" min="1" value="1">
+                                <button class="remove-compounding-item">×</button>
+                            </div>
+                        </div>
+                        <button class="add-compounding-item" id="add-compounding-item">+ Tambah Obat</button>
+                        <button class="btn btn-primary" id="add-compounding" style="margin-top: 15px;">Tambahkan ke Keranjang</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="right-panel">
+                <div class="cart">
+                    <div class="cart-header">
+                        <h3>Keranjang Belanja</h3>
+                        <button class="btn btn-danger" id="clear-cart">Kosongkan</button>
+                    </div>
+                    <div class="cart-items" id="cart-items">
+                        <!-- Item keranjang akan dimuat di sini -->
+                    </div>
+                    <div class="cart-total" id="cart-total">
+                        Total: Rp 0
+                    </div>
+                </div>
+                
+                <div class="payment-section">
+                    <h3>Pembayaran</h3>
+                    <div class="form-group">
+                        <label for="customer-name">Nama Pelanggan</label>
+                        <input type="text" id="customer-name" placeholder="Nama pelanggan">
+                    </div>
+                    <div class="payment-methods">
+                        <label>Metode Pembayaran:</label>
+                        <label><input type="radio" name="payment-method" value="cash" checked> Tunai</label>
+                        <label><input type="radio" name="payment-method" value="debit"> Kartu Debit</label>
+                        <label><input type="radio" name="payment-method" value="credit"> Kartu Kredit</label>
+                        <label><input type="radio" name="payment-method" value="insurance"> Asuransi</label>
+                    </div>
+                    <div class="form-group" id="cash-input">
+                        <label for="cash-received">Uang Diterima</label>
+                        <input type="number" id="cash-received" placeholder="Jumlah uang yang diterima">
+                    </div>
+                    <div class="form-group" id="change-amount" style="display: none;">
+                        <label>Kembalian: <span id="change">Rp 0</span></label>
+                    </div>
+                    <button class="btn btn-primary" id="process-payment">Proses Pembayaran</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal" id="receipt-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Struk Pembayaran</h2>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="receipt" id="receipt-content">
+                <!-- Struk akan dimuat di sini -->
+            </div>
+            <button class="btn btn-primary" id="print-receipt" style="margin-top: 20px;">Cetak Struk</button>
+        </div>
+    </div>
+    
+    <script>
+        // Data contoh produk
+        const products = [
+            { id: 1, name: "Paracetamol 500mg", price: 5000, stock: 100, category: "analgesik" },
+            { id: 2, name: "Amoxicillin 500mg", price: 15000, stock: 50, category: "antibiotik", requires_prescription: true },
+            { id: 3, name: "Cetirizine 10mg", price: 8000, stock: 75, category: "antihistamin" },
+            { id: 4, name: "Omeprazole 20mg", price: 12000, stock: 60, category: "antacid" },
+            { id: 5, name: "Vitamin C 500mg", price: 10000, stock: 120, category: "vitamin" },
+            { id: 6, name: "Salbutamol Inhaler", price: 45000, stock: 30, category: "respiratori", requires_prescription: true },
+            { id: 7, name: "Metformin 500mg", price: 20000, stock: 40, category: "antidiabetes", requires_prescription: true },
+            { id: 8, name: "Ibuprofen 400mg", price: 7000, stock: 80, category: "analgesik" },
+            { id: 9, name: "Loratadine 10mg", price: 9000, stock: 65, category: "antihistamin" },
+            { id: 10, name: "Simvastatin 20mg", price: 25000, stock: 35, category: "kardiovaskular", requires_prescription: true }
+        ];
+        
+        // Variabel global
+        let cart = [];
+        let currentTab = "regular";
+        let prescriptionItems = [];
+        let compoundingItems = [];
+        
+        // Fungsi untuk menampilkan tanggal dan waktu
+        function updateDateTime() {
+            const now = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
+            document.getElementById('datetime').textContent = now.toLocaleDateString('id-ID', options);
+        }
+        
+        // Fungsi untuk memuat produk
+        function loadProducts(filter = "", isPrescription = false) {
+            const productList = isPrescription ? document.getElementById('prescription-product-list') : document.getElementById('product-list');
+            productList.innerHTML = "";
+            
+            const filteredProducts = products.filter(product => {
+                const matchesSearch = product.name.toLowerCase().includes(filter.toLowerCase());
+                if (isPrescription) {
+                    return matchesSearch && product.requires_prescription;
+                }
+                return matchesSearch;
+            });
+            
+            if (filteredProducts.length === 0) {
+                productList.innerHTML = "<div style='padding: 20px; text-align: center; color: #666;'>Tidak ada produk ditemukan</div>";
+                return;
+            }
+            
+            filteredProducts.forEach(product => {
+                const productItem = document.createElement('div');
+                productItem.className = 'product-item';
+                productItem.dataset.id = product.id;
+                productItem.innerHTML = `
+                    <div class="name">${product.name}</div>
+                    <div class="price">Rp ${product.price.toLocaleString('id-ID')}</div>
+                    <div class="stock">Stok: ${product.stock}</div>
+                `;
+                productItem.addEventListener('click', () => addToCart(product));
+                productList.appendChild(productItem);
+            });
+        }
+        
+        // Fungsi untuk memuat obat racikan
+        function loadCompoundingDrugs() {
+            const compoundingSelects = document.querySelectorAll('.compounding-drug');
+            compoundingSelects.forEach(select => {
+                // Simpan nilai yang dipilih sebelumnya
+                const selectedValue = select.value;
+                select.innerHTML = '<option value="">Pilih obat</option>';
+                
+                products.forEach(product => {
+                    const option = document.createElement('option');
+                    option.value = product.id;
+                    option.textContent = `${product.name} (Rp ${product.price.toLocaleString('id-ID')})`;
+                    select.appendChild(option);
+                });
+                
+                // Kembalikan nilai yang dipilih sebelumnya jika masih ada
+                if (selectedValue && products.some(p => p.id == selectedValue)) {
+                    select.value = selectedValue;
+                }
+            });
+        }
+        
+        // Fungsi untuk menambahkan item ke keranjang
+        function addToCart(product, quantity = 1, isPrescription = false, prescriptionData = null, isCompounding = false, compoundingData = null) {
+            // Cek apakah item sudah ada di keranjang
+            let existingItem = null;
+            
+            if (isCompounding) {
+                // Untuk obat racikan, kita buat item baru meskipun komposisinya sama
+                existingItem = null;
+            } else {
+                existingItem = cart.find(item => item.id === product.id && !item.isCompounding && (!item.isPrescription || item.prescriptionData === prescriptionData));
+            }
+            
+            if (existingItem) {
+                existingItem.quantity += quantity;
+            } else {
+                const cartItem = {
+                    id: product.id,
+                    name: product.name,
+                    price: product.price,
+                    quantity: quantity,
+                    isPrescription: isPrescription,
+                    prescriptionData: prescriptionData,
+                    isCompounding: isCompounding,
+                    compoundingData: compoundingData
+                };
+                cart.push(cartItem);
+            }
+            
+            updateCart();
+        }
+        
+        // Fungsi untuk menambahkan resep ke keranjang
+        function addPrescriptionToCart() {
+            const patientName = document.getElementById('patient-name').value;
+            const doctorName = document.getElementById('doctor-name').value;
+            const prescriptionNumber = document.getElementById('prescription-number').value;
+            const prescriptionDate = document.getElementById('prescription-date').value;
+            
+            if (!patientName || !doctorName || !prescriptionNumber || !prescriptionDate) {
+                alert('Harap lengkapi semua data resep!');
+                return;
+            }
+            
+            if (prescriptionItems.length === 0) {
+                alert('Harap tambahkan minimal satu obat ke resep!');
+                return;
+            }
+            
+            const prescriptionData = {
+                patientName,
+                doctorName,
+                prescriptionNumber,
+                prescriptionDate,
+                items: [...prescriptionItems]
+            };
+            
+            // Tambahkan semua item resep ke keranjang
+            prescriptionItems.forEach(item => {
+                const product = products.find(p => p.id == item.productId);
+                if (product) {
+                    addToCart(product, item.quantity, true, prescriptionData);
+                }
+            });
+            
+            // Reset form resep
+            document.getElementById('patient-name').value = '';
+            document.getElementById('doctor-name').value = '';
+            document.getElementById('prescription-number').value = '';
+            document.getElementById('prescription-date').value = '';
+            prescriptionItems = [];
+            
+            // Kembali ke tab regular
+            switchTab('regular');
+        }
+        
+        // Fungsi untuk menambahkan obat racikan ke keranjang
+        function addCompoundingToCart() {
+            const compoundingName = document.getElementById('compounding-name').value;
+            const compoundingInstruction = document.getElementById('compounding-instruction').value;
+            
+            if (!compoundingName) {
+                alert('Harap isi nama racikan!');
+                return;
+            }
+            
+            const items = [];
+            const drugSelects = document.querySelectorAll('.compounding-drug');
+            const quantityInputs = document.querySelectorAll('.compounding-quantity');
+            
+            for (let i = 0; i < drugSelects.length; i++) {
+                const drugId = drugSelects[i].value;
+                const quantity = parseInt(quantityInputs[i].value) || 1;
+                
+                if (!drugId) {
+                    alert('Harap pilih obat untuk semua item racikan!');
+                    return;
+                }
+                
+                const product = products.find(p => p.id == drugId);
+                if (product) {
+                    items.push({
+                        productId: product.id,
+                        productName: product.name,
+                        price: product.price,
+                        quantity: quantity
+                    });
+                }
+            }
+            
+            if (items.length === 0) {
+                alert('Harap tambahkan minimal satu obat ke racikan!');
+                return;
+            }
+            
+            // Hitung total harga racikan (harga semua komponen)
+            const totalPrice = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            
+            // Buat item racikan untuk keranjang
+            const compoundingItem = {
+                id: 'comp-' + Date.now(),
+                name: compoundingName,
+                price: totalPrice,
+                quantity: 1,
+                isCompounding: true,
+                compoundingData: {
+                    name: compoundingName,
+                    instruction: compoundingInstruction,
+                    items: items
+                }
+            };
+            
+            cart.push(compoundingItem);
+            updateCart();
+            
+            // Reset form racikan
+            document.getElementById('compounding-name').value = '';
+            document.getElementById('compounding-instruction').value = '';
+            const compoundingItemsDiv = document.getElementById('compounding-items');
+            compoundingItemsDiv.innerHTML = `
+                <div class="compounding-item">
+                    <select class="compounding-drug">
+                        <option value="">Pilih obat</option>
+                    </select>
+                    <input type="number" class="compounding-quantity" placeholder="Jumlah" min="1" value="1">
+                    <button class="remove-compounding-item">×</button>
+                </div>
+            `;
+            loadCompoundingDrugs();
+            
+            // Kembali ke tab regular
+            switchTab('regular');
+        }
+        
+        // Fungsi untuk memperbarui tampilan keranjang
+        function updateCart() {
+            const cartItemsElement = document.getElementById('cart-items');
+            cartItemsElement.innerHTML = "";
+            
+            if (cart.length === 0) {
+                cartItemsElement.innerHTML = "<div style='padding: 20px; text-align: center; color: #666;'>Keranjang kosong</div>";
+                document.getElementById('cart-total').textContent = "Total: Rp 0";
+                return;
+            }
+            
+            let total = 0;
+            
+            cart.forEach((item, index) => {
+                const itemTotal = item.price * item.quantity;
+                total += itemTotal;
+                
+                const cartItemElement = document.createElement('div');
+                cartItemElement.className = 'cart-item';
+                
+                if (item.isPrescription) {
+                    // Item resep dokter
+                    cartItemElement.innerHTML = `
+                        <div class="info">
+                            <div><strong>${item.name}</strong> (Resep)</div>
+                            <small>Pasien: ${item.prescriptionData.patientName}</small>
+                        </div>
+                        <div class="quantity-control">
+                            <button class="decrease" data-index="${index}">-</button>
+                            <input type="number" value="${item.quantity}" min="1" data-index="${index}">
+                            <button class="increase" data-index="${index}">+</button>
+                        </div>
+                        <div class="price">Rp ${itemTotal.toLocaleString('id-ID')}</div>
+                        <div class="remove" data-index="${index}">×</div>
+                    `;
+                } else if (item.isCompounding) {
+                    // Item obat racikan
+                    cartItemElement.innerHTML = `
+                        <div class="info">
+                            <div><strong>${item.name}</strong> (Racikan)</div>
+                            <small>${item.compoundingData.instruction || 'Tidak ada aturan pakai'}</small>
+                        </div>
+                        <div class="quantity-control">
+                            <button class="decrease" data-index="${index}">-</button>
+                            <input type="number" value="${item.quantity}" min="1" data-index="${index}">
+                            <button class="increase" data-index="${index}">+</button>
+                        </div>
+                        <div class="price">Rp ${itemTotal.toLocaleString('id-ID')}</div>
+                        <div class="remove" data-index="${index}">×</div>
+                    `;
+                } else {
+                    // Item biasa
+                    cartItemElement.innerHTML = `
+                        <div class="info">
+                            <div><strong>${item.name}</strong></div>
+                        </div>
+                        <div class="quantity-control">
+                            <button class="decrease" data-index="${index}">-</button>
+                            <input type="number" value="${item.quantity}" min="1" data-index="${index}">
+                            <button class="increase" data-index="${index}">+</button>
+                        </div>
+                        <div class="price">Rp ${itemTotal.toLocaleString('id-ID')}</div>
+                        <div class="remove" data-index="${index}">×</div>
+                    `;
+                }
+                
+                cartItemsElement.appendChild(cartItemElement);
+            });
+            
+            document.getElementById('cart-total').textContent = `Total: Rp ${total.toLocaleString('id-ID')}`;
+            
+            // Tambahkan event listener untuk tombol quantity
+            document.querySelectorAll('.decrease').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const index = e.target.dataset.index;
+                    if (cart[index].quantity > 1) {
+                        cart[index].quantity--;
+                        updateCart();
+                    }
+                });
+            });
+            
+            document.querySelectorAll('.increase').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const index = e.target.dataset.index;
+                    cart[index].quantity++;
+                    updateCart();
+                });
+            });
+            
+            document.querySelectorAll('.cart-item input[type="number"]').forEach(input => {
+                input.addEventListener('change', (e) => {
+                    const index = e.target.dataset.index;
+                    const newQuantity = parseInt(e.target.value) || 1;
+                    cart[index].quantity = newQuantity;
+                    updateCart();
+                });
+            });
+            
+            document.querySelectorAll('.remove').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const index = e.target.dataset.index;
+                    cart.splice(index, 1);
+                    updateCart();
+                });
+            });
+        }
+        
+        // Fungsi untuk memproses pembayaran
+        function processPayment() {
+            if (cart.length === 0) {
+                alert('Keranjang belanja kosong!');
+                return;
+            }
+            
+            const customerName = document.getElementById('customer-name').value;
+            const paymentMethod = document.querySelector('input[name="payment-method"]:checked').value;
+            
+            if (!customerName) {
+                alert('Harap isi nama pelanggan!');
+                return;
+            }
+            
+            // Hitung total belanja
+            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            
+            // Untuk pembayaran tunai, cek uang yang diterima
+            if (paymentMethod === 'cash') {
+                const cashReceived = parseFloat(document.getElementById('cash-received').value) || 0;
+                if (cashReceived < total) {
+                    alert('Uang yang diterima kurang dari total belanja!');
+                    return;
+                }
+            }
+            
+            // Generate struk
+            generateReceipt(customerName, paymentMethod);
+            
+            // Tampilkan modal struk
+            document.getElementById('receipt-modal').style.display = 'flex';
+        }
+        
+        // Fungsi untuk generate struk
+        function generateReceipt(customerName, paymentMethod) {
+            const now = new Date();
+            const dateTimeString = now.toLocaleDateString('id-ID', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            
+            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            let cashReceived = 0;
+            let change = 0;
+            
+            if (paymentMethod === 'cash') {
+                cashReceived = parseFloat(document.getElementById('cash-received').value) || 0;
+                change = cashReceived - total;
+            }
+            
+            let receiptText = `
+                APOTEK SEHAT
+                Jl. Kesehatan No. 123
+                Telp: (021) 1234567
+                =====================
+                ${dateTimeString}
+                Pelanggan: ${customerName}
+                =====================
+                ITEM                HARGA
+            `;
+            
+            cart.forEach(item => {
+                const itemTotal = item.price * item.quantity;
+                let itemName = item.name;
+                
+                if (item.isPrescription) {
+                    itemName += " (Resep)";
+                } else if (item.isCompounding) {
+                    itemName += " (Racikan)";
+                }
+                
+                receiptText += `
+${itemName.substring(0, 18).padEnd(18)} ${item.quantity}x ${item.price.toLocaleString('id-ID').padStart(8)}
+                ${itemTotal.toLocaleString('id-ID').padStart(28)}
+                `;
+                
+                // Jika item racikan, tampilkan komposisinya
+                if (item.isCompounding) {
+                    receiptText += `  Komposisi:\n`;
+                    item.compoundingData.items.forEach(compItem => {
+                        receiptText += `  - ${compItem.productName} (${compItem.quantity} ${compItem.quantity > 1 ? 'items' : 'item'})\n`;
+                    });
+                    if (item.compoundingData.instruction) {
+                        receiptText += `  Aturan pakai: ${item.compoundingData.instruction}\n`;
+                    }
+                }
+                
+                // Jika item resep, tampilkan info resep
+                if (item.isPrescription) {
+                    if (cart.filter(i => i.isPrescription && i.prescriptionData === item.prescriptionData)[0] === item) {
+                        receiptText += `  Resep dr. ${item.prescriptionData.doctorName}\n`;
+                        receiptText += `  Untuk: ${item.prescriptionData.patientName}\n`;
+                        receiptText += `  No. Resep: ${item.prescriptionData.prescriptionNumber}\n`;
+                    }
+                }
+            });
+            
+            receiptText += `
+                =====================
+                TOTAL: ${total.toLocaleString('id-ID').padStart(24)}
+                BAYAR: ${paymentMethod.toUpperCase()}
+            `;
+            
+            if (paymentMethod === 'cash') {
+                receiptText += `
+                TUNAI: Rp ${cashReceived.toLocaleString('id-ID').padStart(22)}
+                KEMBALI: Rp ${change.toLocaleString('id-ID').padStart(20)}
+                `;
+            }
+            
+            receiptText += `
+                =====================
+                Terima kasih telah berbelanja
+                di Apotek Sehat
+                =====================
+                *Simpan struk ini sebagai bukti pembelian*
+            `;
+            
+            document.getElementById('receipt-content').textContent = receiptText;
+        }
+        
+        // Fungsi untuk mengganti tab
+        function switchTab(tabName) {
+            currentTab = tabName;
+            
+            // Update tampilan tab
+            document.querySelectorAll('.tab').forEach(tab => {
+                if (tab.dataset.tab === tabName) {
+                    tab.classList.add('active');
+                } else {
+                    tab.classList.remove('active');
+                }
+            });
+            
+            document.querySelectorAll('.tab-content').forEach(content => {
+                if (content.id === tabName + '-tab') {
+                    content.classList.add('active');
+                } else {
+                    content.classList.remove('active');
+                }
+            });
+            
+            // Load produk yang sesuai dengan tab
+            if (tabName === 'prescription') {
+                loadProducts("", true);
+            } else if (tabName === 'regular') {
+                loadProducts();
+            }
+        }
+        
+        // Event listener saat DOM siap
+        document.addEventListener('DOMContentLoaded', () => {
+            updateDateTime();
+            setInterval(updateDateTime, 1000);
+            
+            loadProducts();
+            loadCompoundingDrugs();
+            
+            // Tab switching
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.addEventListener('click', () => switchTab(tab.dataset.tab));
+            });
+            
+            // Pencarian produk
+            document.getElementById('search').addEventListener('input', (e) => {
+                loadProducts(e.target.value);
+            });
+            
+            document.getElementById('prescription-search').addEventListener('input', (e) => {
+                loadProducts(e.target.value, true);
+            });
+            
+            // Tambahkan item resep ke daftar sementara
+            document.getElementById('prescription-product-list').addEventListener('click', (e) => {
+                const productItem = e.target.closest('.product-item');
+                if (productItem) {
+                    const productId = parseInt(productItem.dataset.id);
+                    const product = products.find(p => p.id === productId);
+                    
+                    if (product) {
+                        const quantity = parseInt(prompt(`Masukkan jumlah ${product.name}:`, "1")) || 1;
+                        prescriptionItems.push({
+                            productId: product.id,
+                            quantity: quantity
+                        });
+                        alert(`${quantity} ${product.name} telah ditambahkan ke resep. Jangan lupa klik "Tambahkan ke Keranjang" setelah selesai.`);
+                    }
+                }
+            });
+            
+            // Tambahkan resep ke keranjang
+            document.getElementById('add-prescription').addEventListener('click', addPrescriptionToCart);
+            
+            // Tambahkan item racikan
+            document.getElementById('add-compounding-item').addEventListener('click', () => {
+                const compoundingItemsDiv = document.getElementById('compounding-items');
+                const newItem = document.createElement('div');
+                newItem.className = 'compounding-item';
+                newItem.innerHTML = `
+                    <select class="compounding-drug">
+                        <option value="">Pilih obat</option>
+                    </select>
+                    <input type="number" class="compounding-quantity" placeholder="Jumlah" min="1" value="1">
+                    <button class="remove-compounding-item">×</button>
+                `;
+                compoundingItemsDiv.appendChild(newItem);
+                loadCompoundingDrugs();
+                
+                // Tambahkan event listener untuk tombol hapus
+                newItem.querySelector('.remove-compounding-item').addEventListener('click', () => {
+                    if (compoundingItemsDiv.children.length > 1) {
+                        compoundingItemsDiv.removeChild(newItem);
+                    } else {
+                        alert('Racikan harus memiliki minimal satu obat!');
+                    }
+                });
+            });
+            
+            // Tambahkan racikan ke keranjang
+            document.getElementById('add-compounding').addEventListener('click', addCompoundingToCart);
+            
+            // Kosongkan keranjang
+            document.getElementById('clear-cart').addEventListener('click', () => {
+                if (confirm('Apakah Anda yakin ingin mengosongkan keranjang?')) {
+                    cart = [];
+                    updateCart();
+                }
+            });
+            
+            // Pembayaran tunai
+            document.querySelectorAll('input[name="payment-method"]').forEach(radio => {
+                radio.addEventListener('change', (e) => {
+                    if (e.target.value === 'cash') {
+                        document.getElementById('cash-input').style.display = 'block';
+                        document.getElementById('change-amount').style.display = 'none';
+                    } else {
+                        document.getElementById('cash-input').style.display = 'none';
+                        document.getElementById('change-amount').style.display = 'none';
+                    }
+                });
+            });
+            
+            // Hitung kembalian untuk tunai
+            document.getElementById('cash-received').addEventListener('input', (e) => {
+                const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                const cashReceived = parseFloat(e.target.value) || 0;
+                const change = cashReceived - total;
+                
+                if (change >= 0) {
+                    document.getElementById('change').textContent = `Rp ${change.toLocaleString('id-ID')}`;
+                    document.getElementById('change-amount').style.display = 'block';
+                } else {
+                    document.getElementById('change-amount').style.display = 'none';
+                }
+            });
+            
+            // Proses pembayaran
+            document.getElementById('process-payment').addEventListener('click', processPayment);
+            
+            // Cetak struk
+            document.getElementById('print-receipt').addEventListener('click', () => {
+                window.print();
+            });
+            
+            // Tutup modal struk
+            document.querySelector('.close-modal').addEventListener('click', () => {
+                document.getElementById('receipt-modal').style.display = 'none';
+                // Kosongkan keranjang setelah cetak struk
+                cart = [];
+                updateCart();
+                document.getElementById('customer-name').value = '';
+                document.getElementById('cash-received').value = '';
+                document.getElementById('change-amount').style.display = 'none';
+            });
+        });
+    </script>
+</body>
+</html>

@@ -91,6 +91,16 @@ class ObatResource extends Resource
                             $set('kode_obat', $newKode);
                         }
                     }),
+                Forms\Components\Select::make('jenis_obat')
+                    ->options([
+                        'obat_bebas' => 'Obat Bebas',
+                        'obat_bebas_terbatas' => 'Obat Bebas Terbatas',
+                        'obat_keras' => 'Obat Keras',
+                        'narkotika' => 'Narkotika'
+                    ])
+                    ->required()
+                    ->searchable()
+                    ->default('obat_bebas'),
                 Forms\Components\TextInput::make('stok')
                     ->numeric()
                     ->required(),
@@ -102,7 +112,6 @@ class ObatResource extends Resource
                     ->required(),
                 Forms\Components\DatePicker::make('tanggal_kadaluarsa')
                     ->required(),
-
                 Forms\Components\FileUpload::make('gambar')
                     ->image()
                     ->imageEditor()
@@ -124,6 +133,8 @@ class ObatResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('kategori')
                     ->searchable(),
+                Tables\Columns\TextColumn::make('jenis_obat')
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('stok')
                     ->numeric()
                     ->sortable(),
@@ -133,7 +144,6 @@ class ObatResource extends Resource
                 Tables\Columns\TextColumn::make('tanggal_kadaluarsa')
                     ->date()
                     ->sortable(),
-
                 Tables\Columns\ImageColumn::make('gambar')
                     ->label('Gambar')
                     ->circular()

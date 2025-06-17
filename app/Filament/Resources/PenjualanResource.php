@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\PenjualanResource\Pages;
+use App\Filament\Resources\PenjualanResource\RelationManagers;
 use App\Models\Penjualan;
 use App\Models\Obat;
 use Filament\Forms;
@@ -11,6 +12,15 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletingScope; // Jika Anda menggunakan Soft Deletes
+use Filament\Tables\Columns\TextColumn;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Placeholder;
+use Filament\Forms\Components\Grid;
+use Illuminate\Database\Eloquent\Model;
 
 class PenjualanResource extends Resource
 {
@@ -24,163 +34,68 @@ class PenjualanResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('nomor_nota')
-                    ->required()
-                    ->unique(ignoreRecord: true)
-                    ->disabled()
-                    ->dehydrated()
-                    ->default(function () {
-                        // Mendapatkan tanggal saat ini
-                        $tanggal = now()->format('Ymd');
-
-                        // Mendapatkan nomor urut terakhir
-                        $lastPenjualan = Penjualan::whereDate('created_at', now())
-                            ->orderBy('nomor_nota', 'desc')
-                            ->first();
-
-                        $nomorUrut = '001';
-
-                        if ($lastPenjualan) {
-                            $lastNomor = substr($lastPenjualan->nomor_nota, -3);
-                            $nomorUrut = str_pad((int)$lastNomor + 1, 3, '0', STR_PAD_LEFT);
-                        }
-
-                        return "PJ/{$tanggal}/{$nomorUrut}";
-                    })
-                    ->label('Nomor Nota')
-                    ->placeholder('Nomor nota akan dibuat otomatis')
-                    ->helperText('Format: PJ/YYYYMMDD/XXX'),
-
-                Forms\Components\DatePicker::make('tanggal_penjualan')
-                    ->required()
-                    ->label('Tanggal Penjualan')
-                    ->default(now())
-                    ->disabled()
-                    ->dehydrated(),
-
-                Forms\Components\Repeater::make('penjualanDetails')
-                    ->relationship()
-                    ->schema([
-                        Forms\Components\Select::make('obat_id')
-                            ->relationship('obat', 'nama_obat')
-                            ->required()
-                            ->searchable()
-                            ->preload()
-                            ->label('Obat'),
-
-                        Forms\Components\TextInput::make('jumlah')
+                // Ini untuk tampilan detail (ViewAction)
+                Forms\Components\Section::make()->schema([
+                    Forms\Components\Grid::make(2)->schema([
+                        TextInput::make('nomor_nota')->disabled()->label('Nomor Nota'),
+                        DatePicker::make('tanggal_penjualan')->disabled()->label('Tanggal Penjualan'),
+                    ]),
+                    Grid::make(2)->schema([
+                        TextInput::make('user.name')->label('Kasir')->disabled(),
+                        TextInput::make('nama_pelanggan')->label('Nama Pelanggan')->disabled(),
+                    ]),
+                    Grid::make(3)->schema([
+                        TextInput::make('total_harga')
                             ->numeric()
-                            ->required()
-                            ->label('Jumlah')
-                            ->live()
-                            ->afterStateUpdated(function ($state, callable $set, $get) {
-                                if ($state && $get('harga_jual')) {
-                                    $subtotal = (int)$state * (int)$get('harga_jual');
-                                    $set('subtotal', $subtotal);
-
-                                    // Update total harga
-                                    $repeaterState = $get('../../penjualanDetails');
-                                    if ($repeaterState) {
-                                        $totalHarga = 0;
-                                        foreach ($repeaterState as $item) {
-                                            $totalHarga += (int)($item['subtotal'] ?? 0);
-                                        }
-                                        $set('../../total_harga', $totalHarga);
-                                    }
-                                }
-                            }),
-
-                        Forms\Components\TextInput::make('harga_jual')
-                            ->numeric()
-                            ->required()
-                            ->label('Harga Jual')
                             ->prefix('Rp')
-                            ->live()
-                            ->afterStateUpdated(function ($state, callable $set, $get) {
-                                if ($state && $get('jumlah')) {
-                                    $subtotal = (int)$state * (int)$get('jumlah');
-                                    $set('subtotal', $subtotal);
-
-                                    // Update total harga
-                                    $repeaterState = $get('../../penjualanDetails');
-                                    if ($repeaterState) {
-                                        $totalHarga = 0;
-                                        foreach ($repeaterState as $item) {
-                                            $totalHarga += (int)($item['subtotal'] ?? 0);
-                                        }
-                                        $set('../../total_harga', $totalHarga);
-                                    }
-                                }
-                            }),
-
-                        Forms\Components\TextInput::make('subtotal')
-                            ->numeric()
-                            ->required()
                             ->disabled()
-                            ->dehydrated()
-                            ->default(0)
+                            ->label('Total Harga'),
+                        TextInput::make('bayar')
+                            ->numeric()
                             ->prefix('Rp')
-                            ->formatStateUsing(fn($state): string => $state ? number_format((int)$state, 0, ',', '.') : '0')
-                            ->label('Subtotal'),
-                    ])
-                    ->columns(4)
-                    ->label('Detail Penjualan')
-                    ->live()
-                    ->afterStateUpdated(function ($state, callable $set) {
-                        if ($state) {
-                            $totalHarga = 0;
-                            foreach ($state as $item) {
-                                $totalHarga += (int)($item['subtotal'] ?? 0);
-                            }
-                            $set('total_harga', $totalHarga);
-                        }
-                    })
-                    ->deleteAction(function (callable $set, $state) {
-                        if ($state) {
-                            $totalHarga = 0;
-                            foreach ($state as $item) {
-                                $totalHarga += (int)($item['subtotal'] ?? 0);
-                            }
-                            $set('total_harga', $totalHarga);
-                        }
-                    }),
+                            ->disabled()
+                            ->label('Jumlah Dibayar'),
+                        TextInput::make('kembalian')
+                            ->numeric()
+                            ->prefix('Rp')
+                            ->disabled()
+                            ->label('Kembalian'),
+                    ]),
+                    TextInput::make('metode_pembayaran')->disabled()->label('Metode Pembayaran'),
+                    Forms\Components\Textarea::make('keterangan')->rows(2)->disabled()->label('Keterangan'),
 
-                Forms\Components\TextInput::make('total_harga')
-                    ->numeric()
-                    ->required()
-                    ->disabled()
-                    ->dehydrated()
-                    ->default(0)
-                    ->prefix('Rp')
-                    ->formatStateUsing(fn($state): string => $state ? number_format((int)$state, 0, ',', '.') : '0')
-                    ->label('Total Harga'),
+                    // Menampilkan Detail Obat yang Terjual
+                    Repeater::make('penjualanDetails') // Nama relasi di model Penjualan
+                        ->label('Detail Obat Terjual')
+                        ->schema([
+                            TextInput::make('obat.nama_obat')->label('Nama Obat')->disabled(), // Relasi obat() di PenjualanDetail
+                            TextInput::make('jumlah')->numeric()->disabled(),
+                            TextInput::make('harga_jual')
+                                ->numeric()
+                                ->prefix('Rp')
+                                ->disabled(),
+                            TextInput::make('subtotal')
+                                ->numeric()
+                                ->prefix('Rp')
+                                ->disabled(),
+                            // Tambahkan ini jika Anda punya kolom nomor_resep dan nama_dokter di penjualan_details
+                            TextInput::make('nomor_resep')->label('No. Resep')->disabled()->hidden(fn($record) => empty($record->nomor_resep)),
+                            TextInput::make('nama_dokter')->label('Nama Dokter')->disabled()->hidden(fn($record) => empty($record->nama_dokter)),
+                        ])
+                        ->columns(4) // Tampilkan dalam 4 kolom per baris detail
+                        ->disabled() // Admin tidak bisa mengedit detail dari sini
+                        ->deletable(false) // Tidak bisa dihapus
+                        ->addable(false) // Tidak bisa ditambahkan
+                        ->collapsible() // Bisa dilipat/dibuka
+                        ->defaultItems(0), // Pastikan tidak ada item kosong saat view
 
-                Forms\Components\TextInput::make('bayar')
-                    ->numeric()
-                    ->required()
-                    ->label('Bayar')
-                    ->prefix('Rp')
-                    ->live()
-                    ->afterStateUpdated(function ($state, callable $set, $get) {
-                        if ($state) {
-                            $kembalian = (int)$state - (int)$get('total_harga');
-                            $set('kembalian', $kembalian);
-                        }
-                    }),
-
-                Forms\Components\TextInput::make('kembalian')
-                    ->numeric()
-                    ->disabled()
-                    ->dehydrated()
-                    ->default(0)
-                    ->prefix('Rp')
-                    ->formatStateUsing(fn($state): string => $state ? number_format((int)$state, 0, ',', '.') : '0')
-                    ->label('Kembalian'),
-
-                Forms\Components\Textarea::make('keterangan')
-                    ->maxLength(65535)
-                    ->label('Keterangan')
-                    ->placeholder('Tambahkan keterangan jika diperlukan'),
+                    Placeholder::make('created_at')
+                        ->label('Waktu Transaksi')
+                        ->content(fn(?Model $record): string => $record ? $record->created_at->format('d M Y, H:i:s') : '-'),
+                    Placeholder::make('updated_at')
+                        ->label('Terakhir Diperbarui')
+                        ->content(fn(?Model $record): string => $record ? $record->updated_at->format('d M Y, H:i:s') : '-'),
+                ])
             ]);
     }
 
@@ -198,16 +113,32 @@ class PenjualanResource extends Resource
                     ->sortable()
                     ->label('Tanggal Penjualan'),
 
-                Tables\Columns\TextColumn::make('total_harga')
-                    ->money('IDR')
-                    ->sortable()
-                    ->label('Total Harga'),
-
-                Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true)
-                    ->label('Tanggal Dibuat'),
+                // Kolom ini penting: nama kasir
+                TextColumn::make('user.name') // Pastikan ada relasi user() di model Penjualan
+                    ->label('Kasir')
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('nama_pelanggan')
+                    ->label('Pelanggan') // Bisa diganti labelnya
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('total_harga')
+                    ->numeric()
+                    ->prefix('Rp')
+                    ->sortable(),
+                TextColumn::make('bayar')
+                    ->numeric()
+                    ->prefix('Rp')
+                    ->label('Dibayar')
+                    ->sortable(),
+                TextColumn::make('kembalian')
+                    ->numeric()
+                    ->prefix('Rp')
+                    ->sortable(),
+                TextColumn::make('metode_pembayaran')
+                    ->label('Metode Bayar') // Label lebih singkat
+                    ->searchable()
+                    ->sortable(),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('status_pembayaran')

@@ -3,13 +3,14 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\KasirController;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\PelangganController;
 
 // Rute autentikasi
 Route::middleware('guest')->group(function () {
     Route::get('/login', function () {
         return view('auth.login');
     })->name('login');
-    
+
     Route::post('/login', [LoginController::class, 'login']);
 });
 
@@ -20,11 +21,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/kasir', [KasirController::class, 'index'])
         ->middleware('role:kasir')
         ->name('kasir.index');
-    
+
     Route::get('/kasir/search', [KasirController::class, 'search'])
         ->middleware('role:kasir')
         ->name('kasir.search');
-        
+
     Route::get('/kasir/obat/{id}', [KasirController::class, 'getObat'])
         ->middleware('role:kasir')
         ->name('kasir.getObat');
@@ -33,7 +34,7 @@ Route::middleware(['auth'])->group(function () {
 // Rute default
 Route::get('/', function () {
     if (auth()->check()) {
-        return auth()->user()->role === 'admin' 
+        return auth()->user()->role === 'admin'
             ? redirect('/admin')
             : redirect('/kasir');
     }
@@ -46,3 +47,12 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 });
 Route::get('/kasir/search', [KasirController::class, 'search'])->name('kasir.search');
 Route::get('/kasir/obat/{id}', [KasirController::class, 'getObat'])->name('kasir.getObat');
+
+// Route untuk pelanggan
+Route::get('/pelanggan', [PelangganController::class, 'index'])->name('pelanggan.index');
+Route::get('/pelanggan/obat', [PelangganController::class, 'getObat'])->name('pelanggan.obat');
+Route::get('/pelanggan/obat/{id}', [App\Http\Controllers\PelangganController::class, 'show'])->name('pelanggan.obat.show');
+Route::get('/contoh', function () {
+    return view('contoh-kasir');
+});
+Route::post('/kasir/checkout', [KasirController::class, 'checkout'])->name('kasir.checkout')->middleware('auth');

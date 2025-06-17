@@ -14,8 +14,14 @@ class Penjualan extends Model
         'total_harga',
         'bayar',
         'kembalian',
-        'keterangan'
+        'keterangan',
+        'user_id',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id'); // 'user_id' adalah nama kolom foreign key di tabel 'penjualans'
+    }
 
     protected $casts = [
         'tanggal_penjualan' => 'date'
