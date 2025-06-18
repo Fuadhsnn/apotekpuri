@@ -107,35 +107,160 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // Fungsi untuk menambahkan obat racikan ke keranjang
-    window.addRacikanToCart = function() {
-        const racikanName = document.getElementById('racikanName').value;
-        const racikanPrice = parseInt(document.getElementById('racikanPrice').value) || 0;
-        const racikanQuantity = parseInt(document.getElementById('racikanQuantity').value) || 1;
-
-        if (!racikanName || racikanPrice <= 0) {
-            alert('Mohon lengkapi nama dan harga obat racikan!');
+    function addRacikanToCart() {
+        const namaRacikan = document.getElementById('nama-racikan').value;
+        const aturanPakai = document.getElementById('aturan-pakai').value;
+        const komposisiContainer = document.getElementById('komposisi-container');
+        const komposisiItems = komposisiContainer.querySelectorAll('div.flex');
+        
+        if (!namaRacikan) {
+            alert('Mohon isi nama racikan!');
             return;
         }
-
-        addToCart(null, racikanName, racikanPrice, racikanQuantity);
-        document.getElementById('racikanForm').reset();
-    };
+        
+        if (komposisiItems.length === 0) {
+            alert('Mohon tambahkan minimal satu obat ke racikan!');
+            return;
+        }
+        
+        let totalHarga = 0;
+        let komposisiText = [];
+        
+        komposisiItems.forEach(item => {
+            const select = item.querySelector('select');
+            const quantity = item.querySelector('input[type="number"]').value;
+            const selectedOption = select.options[select.selectedIndex];
+            
+            if (select.value) {
+                const obatName = selectedOption.text.split(' (')[0];
+                const obatPrice = parseFloat(selectedOption.getAttribute('data-price'));
+                totalHarga += obatPrice * quantity;
+                komposisiText.push(`${obatName} x${quantity}`);
+            }
+        });
+        
+        if (komposisiText.length === 0) {
+            alert('Mohon pilih minimal satu obat untuk racikan!');
+            return;
+        }
+        
+        const racikanName = `${namaRacikan} (${aturanPakai ? aturanPakai : 'Sesuai anjuran'})\n${komposisiText.join(', ')}`;
+        
+        // Tambahkan ke keranjang
+        addToCart(null, racikanName, totalHarga, 1);
+        
+        // Reset form
+        document.getElementById('nama-racikan').value = '';
+        document.getElementById('aturan-pakai').value = '';
+        
+        // Hapus semua komposisi kecuali yang pertama
+        const firstItem = komposisiItems[0];
+        firstItem.querySelector('select').value = '';
+        firstItem.querySelector('input[type="number"]').value = 1;
+        
+        for (let i = 1; i < komposisiItems.length; i++) {
+            komposisiItems[i].remove();
+        }
+    }
 
     // Fungsi untuk menambahkan resep dokter ke keranjang
-    window.addResepToCart = function() {
-        const resepNumber = document.getElementById('resepNumber').value;
-        const resepItems = document.getElementById('resepItems').value;
-        const resepPrice = parseInt(document.getElementById('resepPrice').value) || 0;
-
-        if (!resepNumber || !resepItems || resepPrice <= 0) {
-            alert('Mohon lengkapi semua detail resep dokter!');
+    function addResepToCart() {
+        const namaPasien = document.querySelector('#resep-dokter input[placeholder="Nama pasien"]').value;
+        const namaDokter = document.querySelector('#resep-dokter input[placeholder="Nama dokter"]').value;
+        const nomorResep = document.querySelector('#resep-dokter input[placeholder="Nomor resep"]').value;
+        const tanggalResep = document.querySelector('#resep-dokter input[type="date"]').value;
+        
+        if (!namaPasien || !namaDokter || !nomorResep || !tanggalResep) {
+            alert('Mohon lengkapi semua data resep!');
             return;
         }
+        
+        const resepObatCards = document.querySelectorAll('.resep-obat-card');
+        let selectedObats = [];
+        let totalHarga = 0;
+        
+        resepObatCards.forEach(card => {
+            const checkbox = card.querySelector('input[type="checkbox"]');
+            if (checkbox && checkbox.checked) {
+                const obatName = card.getAttribute('data-name');
+                const obatPrice = parseFloat(card.getAttribute('data-price'));
+                const quantity = parseInt(card.querySelector('.resep-qty').value) || 1;
+                
+                selectedObats.push(`${obatName} x${quantity}`);
+                totalHarga += obatPrice * quantity;
+            }
+        });
+        
+        if (selectedObats.length === 0) {
+            alert('Mohon pilih minimal satu obat untuk resep!');
+            return;
+        }
+        
+        const resepName = `Resep #${nomorResep} (${namaPasien})\nDokter: ${namaDokter}, Tgl: ${tanggalResep}\n${selectedObats.join(', ')}`;
+        
+        // Tambahkan ke keranjang
+        addToCart(null, resepName, totalHarga, 1);
+        
+        // Reset form
+        document.querySelector('#resep-dokter input[placeholder="Nama pasien"]').value = '';
+        document.querySelector('#resep-dokter input[placeholder="Nama dokter"]').value = '';
+        document.querySelector('#resep-dokter input[placeholder="Nomor resep"]').value = '';
+        document.querySelector('#resep-dokter input[type="date"]').value = '';
+        
+        // Uncheck semua obat
+        resepObatCards.forEach(card => {
+            const checkbox = card.querySelector('input[type="checkbox"]');
+            if (checkbox) checkbox.checked = false;
+        });
+    }
 
-        const resepName = `Resep #${resepNumber}: ${resepItems}`;
-        addToCart(null, resepName, resepPrice, 1);
-        document.getElementById('resepForm').reset();
-    };
+    // Event listener untuk tombol tambah obat di racikan
+    document.getElementById('tambah-obat').addEventListener('click', function() {
+        const komposisiContainer = document.getElementById('komposisi-container');
+        const newItem = document.createElement('div');
+        newItem.className = 'flex items-center space-x-2';
+        
+        // Clone select dari item pertama
+        const firstSelect = komposisiContainer.querySelector('select');
+        const newSelect = firstSelect.cloneNode(true);
+        newSelect.value = '';
+        
+        newItem.innerHTML = `
+            <select class="flex-1 rounded-md border-gray-300 shadow-sm">
+                <option value="">Pilih obat</option>
+                ${Array.from(firstSelect.options).map(opt => 
+                    `<option value="${opt.value}" data-price="${opt.getAttribute('data-price')}" ${opt.disabled ? 'disabled' : ''}>
+                        ${opt.text}
+                    </option>`
+                ).join('')}
+            </select>
+            <input type="number" class="w-20 rounded-md border-gray-300 shadow-sm" min="1" value="1">
+            <button type="button" class="text-red-500 hover:text-red-700 px-2 py-1 rounded-md" onclick="this.closest('div').remove()">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        `;
+        
+        komposisiContainer.appendChild(newItem);
+    });
+
+    // Event listener untuk tombol tambah ke keranjang di racikan
+    document.getElementById('tambah-ke-keranjang').addEventListener('click', addRacikanToCart);
+
+    // Tambahkan event listener untuk tombol di kartu obat resep
+    document.querySelectorAll('.resep-obat-card button').forEach(button => {
+        button.addEventListener('click', function() {
+            const card = this.closest('.resep-obat-card');
+            const id = card.getAttribute('data-id');
+            const name = card.getAttribute('data-name');
+            const price = parseFloat(card.getAttribute('data-price'));
+            const quantity = parseInt(card.querySelector('.resep-qty').value) || 1;
+            
+            addToCart(id, name, price, quantity);
+            alert(`${name} telah ditambahkan ke keranjang`);
+        });
+    });
 
     // Format number to currency
     function formatCurrency(amount) {
@@ -234,14 +359,21 @@ document.addEventListener('DOMContentLoaded', function () {
         const customerName = document.getElementById('customerName').value;
         const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
         const receivedAmount = parseInt(amountReceived.value.replace(/\D/g, '') || 0);
+        const total = orderItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
 
-        if (!customerName || !receivedAmount) {
-            alert('Mohon lengkapi nama pelanggan dan pembayaran!');
+        // Jika metode pembayaran QRIS, tidak perlu validasi jumlah uang diterima
+        if (paymentMethod === 'QRIS') {
+            // Lanjutkan proses checkout tanpa validasi receivedAmount
+        } else if (!receivedAmount) {
+            alert('Mohon lengkapi jumlah pembayaran!');
             return;
         }
 
         const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-        const total = orderItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+
+        // Jika metode pembayaran QRIS, set amountReceived sama dengan total
+        const finalAmount = paymentMethod === 'QRIS' ? total : receivedAmount;
 
         fetch('/kasir/checkout', {
             method: 'POST',
@@ -250,16 +382,20 @@ document.addEventListener('DOMContentLoaded', function () {
                 'X-CSRF-TOKEN': csrfToken,
             },
             body: JSON.stringify({
-                customerName,
+                customerName: customerName || 'Pelanggan', // Default jika nama kosong
                 paymentMethod,
-                amountReceived: receivedAmount,
+                amountReceived: finalAmount,
                 orderItems,
             }),
         })
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    alert('Transaksi berhasil!');
+                    if (paymentMethod === 'QRIS') {
+                        alert('Transaksi berhasil! Silahkan scan QR code untuk melakukan pembayaran.');
+                    } else {
+                        alert('Transaksi berhasil!');
+                    }
                     window.location.reload();
                 } else {
                     alert('Transaksi gagal: ' + data.message);
@@ -370,14 +506,47 @@ function initializeTabs() {
 
 // Inisialisasi saat dokumen dimuat
 document.addEventListener('DOMContentLoaded', function() {
-    // ... existing code ...
+    const tabButtons = document.querySelectorAll('.tab-button');
+    const tabContents = document.querySelectorAll('.tab-content');
+    const prescriptionTab = document.querySelector('.tab-button[data-tab="resep-dokter"]');
+    const compoundingTab = document.querySelector('.tab-button[data-tab="obat-racikan"]');
+    const prescriptionContent = document.getElementById('resep-dokter');
+    const compoundingContent = document.getElementById('obat-racikan');
+
+    // Event listener untuk tab kategori
+    tabButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            // Hapus kelas active dari semua tab button
+            tabButtons.forEach(btn => btn.classList.remove('active'));
+            // Tambahkan kelas active ke tab button yang diklik
+            this.classList.add('active');
+
+            // Sembunyikan semua tab content
+            tabContents.forEach(content => content.classList.add('hidden'));
+            
+            // Tampilkan tab content yang sesuai
+            const tabId = this.getAttribute('data-tab');
+            const tabContent = document.getElementById(tabId);
+            if (tabContent) {
+                tabContent.classList.remove('hidden');
+            }
+        });
+    });
+
+    // Set tab pertama sebagai active secara default
+    if (tabButtons.length > 0 && tabContents.length > 0) {
+        tabButtons[0].classList.add('active');
+        tabContents[0].classList.remove('hidden');
+    }
 
     initializeCompoundingForm();
     initializeTabs();
-
-    // Set tab default aktif
-    const defaultTab = document.querySelector('.category-tab[data-category="obat-biasa"]');
+    
+    // Aktifkan tab default jika ada
+    const defaultTab = document.querySelector('.category-tab.default') || document.querySelector('.category-tab');
     if (defaultTab) {
         defaultTab.click();
     }
 });
+
+// Kode untuk tab prescription dan compounding sudah digabungkan ke event listener di atas

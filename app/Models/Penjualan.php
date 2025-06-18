@@ -12,6 +12,7 @@ class Penjualan extends Model
         'tanggal_penjualan',
         'nama_pelanggan',
         'total_harga',
+        'metode_pembayaran',
         'bayar',
         'kembalian',
         'keterangan',
@@ -29,6 +30,6 @@ class Penjualan extends Model
 
     public function penjualanDetails(): HasMany
     {
-        return $this->hasMany(PenjualanDetail::class);
+        return $this->hasMany(PenjualanDetail::class, 'penjualan_id');
     }
 }

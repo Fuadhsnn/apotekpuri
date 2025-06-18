@@ -15,7 +15,8 @@ class SalesOverview extends BaseWidget
         $yesterday = now()->subDay()->format('Y-m-d');
 
         return [
-            Stat::make('Total Penjualan Hari Ini', 
+            Stat::make(
+                'Total Penjualan Hari Ini',
                 Penjualan::whereDate('created_at', $today)
                     ->sum('total_harga')
             )
@@ -27,7 +28,8 @@ class SalesOverview extends BaseWidget
                 ])
                 ->color('success'),
 
-            Stat::make('Transaksi Hari Ini', 
+            Stat::make(
+                'Transaksi Hari Ini',
                 Penjualan::whereDate('created_at', $today)->count()
             )
                 ->description('Jumlah transaksi hari ini')
@@ -38,11 +40,14 @@ class SalesOverview extends BaseWidget
                 ])
                 ->color('warning'),
 
-            Stat::make('Rata-rata Transaksi', 
+            Stat::make(
+                'Rata-rata Transaksi',
                 number_format(
                     Penjualan::whereDate('created_at', $today)
-                        ->avg('total_harga') ?? 0, 
-                    0, ',', '.'
+                        ->avg('total_harga') ?? 0,
+                    0,
+                    ',',
+                    '.'
                 )
             )
                 ->description('Rata-rata nilai transaksi hari ini')

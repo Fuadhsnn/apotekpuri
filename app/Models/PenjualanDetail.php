@@ -11,17 +11,19 @@ class PenjualanDetail extends Model
         'penjualan_id',
         'obat_id',
         'jumlah',
+        'harga',
         'harga_jual',
-        'subtotal'
+        'subtotal',
+        'keterangan'
     ];
 
     public function penjualan(): BelongsTo
     {
-        return $this->belongsTo(Penjualan::class);
+        return $this->belongsTo(Penjualan::class, 'penjualan_id');
     }
 
     public function obat(): BelongsTo
     {
-        return $this->belongsTo(Obat::class);
+        return $this->belongsTo(Obat::class, 'obat_id');
     }
 }

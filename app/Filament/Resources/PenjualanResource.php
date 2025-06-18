@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope; // Jika Anda menggunakan Sof
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
+use Filament\Tables\Filters\Filter;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Placeholder;
@@ -141,12 +142,12 @@ class PenjualanResource extends Resource
                     ->sortable(),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('status_pembayaran')
-                    ->options([
-                        'lunas' => 'Lunas',
-                        'belum_lunas' => 'Belum Lunas'
+                Filter::make('tanggal')
+                    ->form([
+                        Forms\Components\DatePicker::make('dari_tanggal'),
+                        Forms\Components\DatePicker::make('sampai_tanggal'),
                     ])
-                    ->label('Status Pembayaran'),
+                    ->label('Metode Pembayaran'),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),

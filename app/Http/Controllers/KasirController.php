@@ -39,11 +39,11 @@ class KasirController extends Controller
         DB::beginTransaction();
         try {
             $validated = $request->validate([
-                'customerName' => 'required|string|max:255',
+                'customerName' => 'nullable|string|max:255', // Ubah dari required menjadi nullable
                 'paymentMethod' => 'required|string|in:Tunai,QRIS',
-                'amountReceived' => 'required|numeric|min:0',
+                'amountReceived' => 'required_if:paymentMethod,Tunai|numeric|min:0', // Hanya wajib jika metode pembayaran Tunai
                 'orderItems' => 'required|array',
-                'orderItems.*.id' => 'required|exists:obats,id',
+                'orderItems.*.id' => 'nullable',  // Ubah dari required|exists menjadi nullable
                 'orderItems.*.quantity' => 'required|integer|min:1',
                 'orderItems.*.price' => 'required|numeric|min:0',
             ]);
@@ -59,29 +59,43 @@ class KasirController extends Controller
                 'metode_pembayaran' => $validated['paymentMethod'],
                 'nama_pelanggan' => $validated['customerName'],
                 'user_id' => auth()->id(),
-                'bayar' => $validated['amountReceived'], // Tambahkan nilai kolom 'bayar'
+                'bayar' => $validated['amountReceived'],
                 'kembalian' => $validated['amountReceived'] - collect($validated['orderItems'])->sum(fn($item) => $item['price'] * $item['quantity']),
             ]);
 
 
             // Proses item penjualan
             foreach ($validated['orderItems'] as $item) {
-                $obat = Obat::findOrFail($item['id']);
-                if ($obat->stok < $item['quantity']) {
-                    throw new \Exception("Stok tidak mencukupi untuk obat {$obat->nama_obat}");
+                // Jika item memiliki ID obat (bukan racikan)
+                if (!empty($item['id'])) {
+                    $obat = Obat::findOrFail($item['id']);
+                    if ($obat->stok < $item['quantity']) {
+                        throw new \Exception("Stok tidak mencukupi untuk obat {$obat->nama_obat}");
+                    }
+
+                    PenjualanDetail::create([
+                        'penjualan_id' => $penjualan->id,
+                        'obat_id' => $item['id'],
+                        'jumlah' => $item['quantity'],
+                        'harga' => $item['price'],
+                        'harga_jual' => $item['price'],
+                        'subtotal' => $item['price'] * $item['quantity'],
+                    ]);
+
+                    // Update stok obat
+                    $obat->decrement('stok', $item['quantity']);
+                } else {
+                    // Untuk obat racikan atau resep dokter (tanpa ID obat)
+                    PenjualanDetail::create([
+                        'penjualan_id' => $penjualan->id,
+                        'obat_id' => null,  // Tidak ada obat_id
+                        'jumlah' => $item['quantity'],
+                        'harga' => $item['price'],
+                        'harga_jual' => $item['price'],
+                        'subtotal' => $item['price'] * $item['quantity'],
+                        'keterangan' => $item['name'] ?? 'Obat Racikan/Resep',  // Simpan nama racikan sebagai keterangan
+                    ]);
                 }
-
-                PenjualanDetail::create([
-                    'penjualan_id' => $penjualan->id,
-                    'obat_id' => $item['id'],
-                    'jumlah' => $item['quantity'],
-                    'harga' => $item['price'],
-                    'harga_jual' => $item['price'], // Tambahkan harga_jual di sini
-                    'subtotal' => $item['price'] * $item['quantity'], // Tambahkan subtotal
-                ]);
-
-                // Update stok obat
-                $obat->decrement('stok', $item['quantity']);
             }
 
             DB::commit();

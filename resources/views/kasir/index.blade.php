@@ -266,6 +266,14 @@
                             placeholder="Jumlah uang yang diterima">
                     </div>
 
+                    <div id="qrisPayment" class="mb-3 hidden">
+                        <div class="text-sm text-gray-700 mb-2">Silahkan scan QR code untuk melakukan pembayaran.</div>
+                        <div class="bg-gray-100 p-4 rounded-md text-center">
+                            <div class="text-lg font-semibold mb-2">QR Code Pembayaran</div>
+                            <div class="text-sm text-gray-500">QR Code akan muncul setelah transaksi diproses</div>
+                        </div>
+                    </div>
+
                     <div id="changeAmount" class="mb-3 hidden">
                         <label class="block text-sm font-medium text-gray-700 mb-1">Kembalian:</label>
                         <div class="text-lg font-semibold text-green-600">Rp 0</div>
