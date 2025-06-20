@@ -10,12 +10,14 @@ use Illuminate\Support\Facades\DB;
 class PaymentMethodSummary extends ChartWidget
 {
     protected static ?string $heading = 'Proporsi Metode Pembayaran (Bulan Ini)';
-
     protected static ?int $sort = 4;
+
+    // Atur lebar widget
+    protected int | string | array $columnSpan = 1;
 
     protected function getType(): string
     {
-        return 'pie'; // Atau 'doughnut'
+        return 'pie'; // Bisa juga 'doughnut'
     }
 
     protected function getData(): array
@@ -31,14 +33,13 @@ class PaymentMethodSummary extends ChartWidget
         $labels = $paymentMethodsData->pluck('metode_pembayaran')->toArray();
         $data = $paymentMethodsData->pluck('total_transactions')->toArray();
 
-        // Warna yang berbeda untuk setiap slice
         $colors = [
-            '#FF6384',
-            '#36A2EB',
-            '#FFCE56',
-            '#4BC0C0',
-            '#9966FF',
-            '#FF9900'
+            '#FF6384', // Merah
+            '#36A2EB', // Biru
+            '#FFCE56', // Kuning
+            '#4BC0C0', // Teal
+            '#9966FF', // Ungu
+            '#FF9900'  // Orange
         ];
 
         return [
@@ -46,7 +47,24 @@ class PaymentMethodSummary extends ChartWidget
             'datasets' => [
                 [
                     'data' => $data,
-                    'backgroundColor' => array_slice($colors, 0, count($data)), // Ambil warna sesuai jumlah data
+                    'backgroundColor' => array_slice($colors, 0, count($data)),
+                    'borderWidth' => 0, // Hilangkan border
+                ],
+            ],
+        ];
+    }
+
+    protected function getOptions(): array
+    {
+        return [
+            'responsive' => true,
+            'maintainAspectRatio' => false,
+            'height' => 150, // Lebih kecil dari SalesChart
+            'width' => 150,
+
+            'plugins' => [
+                'legend' => [
+                    'position' => 'bottom', // Posisi legend
                 ],
             ],
         ];

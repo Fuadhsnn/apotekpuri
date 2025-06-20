@@ -33,4 +33,20 @@ class Obat extends Model
     {
         return $this->hasMany(PembelianDetail::class);
     }
+    
+    public function stockNotifications(): HasMany
+    {
+        return $this->hasMany(StockNotification::class);
+    }
+    
+    /**
+     * Cek apakah stok obat menipis (kurang dari atau sama dengan threshold)
+     *
+     * @param int $threshold
+     * @return bool
+     */
+    public function isLowStock(int $threshold = 10): bool
+    {
+        return $this->stok <= $threshold;
+    }
 }

@@ -13,29 +13,28 @@
     <!-- Header -->
     <header class="header">
         <div class="header-top">
-            <div class="logo">Medik</div>
-            <nav>
-                <ul class="nav-menu">
-                    <li><a href="#home">Home</a></li>
-                    <li><a href="#about">About</a></li>
-                    <li><a href="#products">Products</a></li>
-                    <li><a href="#contact">Contact</a></li>
-                </ul>
-            </nav>
+            <div class="logo">Puri Pasir Putih</div>
+
         </div>
     </header>
 
     <!-- Hero Section -->
     <section class="hero">
-        <h1>Your Health, Our Priority</h1>
-        <p>Premium medical products and equipment for healthcare professionals</p>
-        <button class="cta-btn">Explore Products</button>
+        <h1>Kesehatan Anda, Prioritas Kami.</h1>
+        <p>Obat berkualitas tinggi untuk memenuhi semua kebutuhan kesehatan Anda.</p>
+        <a href="#products" class="cta-btn">Jelajahi produk</a>
     </section>
 
     <!-- Products Section -->
     <section class="products-section" id="products">
-        <h2 class="section-title">Our Products</h2>
-        <p class="section-subtitle">High-quality medical products for all your healthcare needs</p>
+        <h2 class="section-title">Produk</h2>
+        <p class="section-subtitle">Produk medis berkualitas tinggi untuk semua kebutuhan kesehatan Anda.</p>
+
+        <!-- Search Box -->
+        <div class="search-container">
+            <input type="text" id="searchInput" class="search-input" placeholder="Cari obat...">
+            <button id="searchButton" class="search-button">Cari</button>
+        </div>
 
         <div class="products-grid" id="productsGrid">
             <!-- Products will be dynamically loaded here -->

@@ -58,12 +58,7 @@
             </div>
 
             <div class="tab-content" id="obat-biasa">
-                <div class="category-tabs">
-                    <div class="category-tab active">All</div>
-                    @foreach (['tablet', 'kapsul', 'sirup', 'strip', 'botol', 'box'] as $kategori)
-                        <div class="category-tab">{{ ucfirst($kategori) }}</div>
-                    @endforeach
-                </div>
+
 
                 <div class="product-grid">
                     @foreach ($obats as $obat)
@@ -139,7 +134,8 @@
                                         <p class="text-sm text-gray-500">{{ $obat->kategori }}</p>
                                         <p class="text-sm font-medium text-gray-900">Rp
                                             {{ number_format($obat->harga_jual, 0, ',', '.') }}</p>
-                                        <p class="text-sm {{ $obat->stok > 0 ? 'text-green-600' : 'text-red-600' }}">Stok: {{ $obat->stok }}</p>
+                                        <p class="text-sm {{ $obat->stok > 0 ? 'text-green-600' : 'text-red-600' }}">
+                                            Stok: {{ $obat->stok }}</p>
                                     </div>
                                     <div>
                                         <input type="number"
@@ -183,7 +179,7 @@
                                     <select class="flex-1 rounded-md border-gray-300 shadow-sm">
                                         <option value="">Pilih obat</option>
                                         @foreach ($obats as $obat)
-                                            <option value="{{ $obat->id }}" data-price="{{ $obat->harga_jual }}" 
+                                            <option value="{{ $obat->id }}" data-price="{{ $obat->harga_jual }}"
                                                 {{ $obat->stok <= 0 ? 'disabled' : '' }}>
                                                 {{ $obat->nama_obat }} (Stok: {{ $obat->stok }})
                                             </option>
@@ -225,7 +221,7 @@
                 <div style="color: #777; text-align: center; padding: 20px;">No items added yet</div>
             </div>
 
-            <div class="item-count">Items count: <span id="item-count">0</span></div>
+
 
             <div class="order-summary">
                 <div class="summary-row">

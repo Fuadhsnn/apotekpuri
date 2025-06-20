@@ -1,11 +1,31 @@
 document.addEventListener('DOMContentLoaded', function() {
     loadProducts();
+    
+    // Setup search functionality
+    const searchInput = document.getElementById('searchInput');
+    const searchButton = document.getElementById('searchButton');
+    
+    // Search when button is clicked
+    searchButton.addEventListener('click', function() {
+        searchProducts(searchInput.value);
+    });
+    
+    // Search when Enter key is pressed
+    searchInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            searchProducts(searchInput.value);
+        }
+    });
 });
+
+// Global variable to store all products
+let allProducts = [];
 
 async function loadProducts() {
     try {
         const response = await fetch('/pelanggan/obat');
         const products = await response.json();
+        allProducts = products; // Store all products for search functionality
         const productsGrid = document.getElementById('productsGrid');
         
         if (products.length === 0) {
@@ -13,30 +33,58 @@ async function loadProducts() {
             return;
         }
 
-        productsGrid.innerHTML = products.map(product => `
-            <a href="/pelanggan/obat/${product.id}" class="product-card">
-                <div class="product-image">
-                    <img src="${product.gambar ? '/storage/' + product.gambar : '/default-product.jpg'}" alt="${product.nama_obat}">
-                </div>
-                <div class="product-info">
-                    <h3>${product.nama_obat}</h3>
-                    <p class="code">Kode: ${product.kode_obat}</p>
-                    <p class="category">Kategori: ${product.kategori || '-'}</p>
-                    <p class="price">Rp ${product.harga.toLocaleString('id-ID')}</p>
-                    <p class="stock ${parseInt(product.stok) > 0 ? 'in-stock' : 'out-of-stock'}'>
-                        <span class="stock-icon"></span>
-                        ${parseInt(product.stok) > 0 ? 'Tersedia' : 'Tidak Tersedia'}
-                    </p>
-                </div>
-            </a>
-        `).join('');
-
+        displayProducts(products);
         console.log('Products loaded:', products);
     } catch (error) {
         console.error('Error loading products:', error);
         document.getElementById('productsGrid').innerHTML = 
             '<p class="error-message">Terjadi kesalahan saat memuat produk</p>';
     }
+}
+
+function displayProducts(products) {
+    const productsGrid = document.getElementById('productsGrid');
+    
+    if (products.length === 0) {
+        productsGrid.innerHTML = '<p class="no-products">Tidak ada produk yang sesuai dengan pencarian</p>';
+        return;
+    }
+    
+    productsGrid.innerHTML = products.map(product => `
+        <a href="/pelanggan/obat/${product.id}" class="product-card">
+            <div class="product-image">
+                <img src="${product.gambar ? '/storage/' + product.gambar : '/default-product.jpg'}" alt="${product.nama_obat}">
+            </div>
+            <div class="product-info">
+                <h3>${product.nama_obat}</h3>
+                <p class="code">Kode: ${product.kode_obat}</p>
+                <p class="category">Kategori: ${product.kategori || '-'}</p>
+                <p class="price">Rp ${product.harga.toLocaleString('id-ID')}</p>
+                <p class="stock ${parseInt(product.stok) > 0 ? 'in-stock' : 'out-of-stock'}">
+                    <span class="stock-icon"></span>
+                    ${parseInt(product.stok) > 0 ? 'Tersedia' : 'Tidak Tersedia'}
+                </p>
+            </div>
+        </a>
+    `).join('');
+}
+
+function searchProducts(keyword) {
+    if (!keyword.trim()) {
+        displayProducts(allProducts);
+        return;
+    }
+    
+    keyword = keyword.toLowerCase();
+    
+    const filteredProducts = allProducts.filter(product => 
+        product.nama_obat.toLowerCase().includes(keyword) || 
+        product.kode_obat.toLowerCase().includes(keyword) || 
+        (product.kategori && product.kategori.toLowerCase().includes(keyword)) ||
+        (product.deskripsi && product.deskripsi.toLowerCase().includes(keyword))
+    );
+    
+    displayProducts(filteredProducts);
 }
 
 function showProductDetails(product) {
