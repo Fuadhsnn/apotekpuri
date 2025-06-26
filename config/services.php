@@ -30,5 +30,12 @@ return [
         'secret' => env('AWS_SECRET_ACCESS_KEY'),
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
+    
+    'satusehat' => [
+        'base_url' => env('SATUSEHAT_BASE_URL', 'https://api-satusehat.kemkes.go.id'),
+        'client_id' => env('SATUSEHAT_CLIENT_ID'),
+        'client_secret' => env('SATUSEHAT_CLIENT_SECRET'),
+        'organization_id' => env('SATUSEHAT_ORGANIZATION_ID'),
+    ],
 
 ];

@@ -9,4 +9,13 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateObat extends CreateRecord
 {
     protected static string $resource = ObatResource::class;
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            Actions\Action::make('back')
+                ->label('Kembali')
+                ->url($this->getResource()::getUrl('index')),
+        ];
+    }
 }

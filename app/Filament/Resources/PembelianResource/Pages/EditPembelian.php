@@ -13,10 +13,10 @@ use Illuminate\Support\Collection;
 class EditPembelian extends EditRecord
 {
     protected static string $resource = PembelianResource::class;
-    
+
     // Menyimpan detail pembelian sebelum diubah
     protected Collection $originalDetails;
-    
+
     protected function mutateFormDataBeforeFill(array $data): array
     {
         // Simpan detail pembelian sebelum diubah
@@ -28,19 +28,19 @@ class EditPembelian extends EditRecord
                 'harga_beli' => $detail->harga_beli,
             ];
         });
-        
+
         return $data;
     }
-    
+
     protected function afterSave(): void
     {
         // Ambil data pembelian yang baru diupdate
         $pembelian = $this->record;
         $newDetails = $pembelian->pembelianDetails;
-        
+
         // Kumpulkan ID detail yang ada di data baru
         $newDetailIds = $newDetails->pluck('id')->toArray();
-        
+
         // Proses detail yang dihapus (ada di original tapi tidak ada di new)
         foreach ($this->originalDetails as $originalDetail) {
             if (!in_array($originalDetail['id'], $newDetailIds)) {
@@ -52,15 +52,15 @@ class EditPembelian extends EditRecord
                 }
             }
         }
-        
+
         // Proses detail yang diubah atau ditambahkan
         foreach ($newDetails as $detail) {
             $obat = Obat::find($detail->obat_id);
             if (!$obat) continue;
-            
+
             // Cari di original details
             $originalDetail = $this->originalDetails->firstWhere('id', $detail->id);
-            
+
             if ($originalDetail) {
                 // Detail yang diubah
                 if ($originalDetail['obat_id'] != $detail->obat_id) {
@@ -71,7 +71,7 @@ class EditPembelian extends EditRecord
                         $stokBaru = $obatLama->stok - $originalDetail['jumlah'];
                         $obatLama->update(['stok' => $stokBaru]);
                     }
-                    
+
                     // Tambahkan stok obat baru
                     $stokBaru = $obat->stok + $detail->jumlah;
                     $obat->update(['stok' => $stokBaru]);
@@ -83,7 +83,7 @@ class EditPembelian extends EditRecord
                         $obat->update(['stok' => $stokBaru]);
                     }
                 }
-                
+
                 // Update harga beli jika berubah
                 if ($obat->harga_beli != $detail->harga_beli) {
                     $obat->update(['harga_beli' => $detail->harga_beli]);
@@ -97,7 +97,7 @@ class EditPembelian extends EditRecord
                 ]);
             }
         }
-        
+
         // Tampilkan notifikasi sukses
         Notification::make()
             ->title('Stok obat berhasil diperbarui')
@@ -108,11 +108,17 @@ class EditPembelian extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
+
+            // Tombol Back/Kembali
+            Actions\Action::make('back')
+                ->label('Kembali')
+                ->url($this->getResource()::getUrl('index')),
+
             Actions\DeleteAction::make()
                 ->before(function () {
                     // Sebelum menghapus pembelian, kembalikan stok obat
                     $pembelian = $this->record;
-                    
+
                     foreach ($pembelian->pembelianDetails as $detail) {
                         $obat = Obat::find($detail->obat_id);
                         if ($obat) {
@@ -121,7 +127,7 @@ class EditPembelian extends EditRecord
                             $obat->update(['stok' => $stokBaru]);
                         }
                     }
-                    
+
                     Notification::make()
                         ->title('Stok obat berhasil dikembalikan')
                         ->success()

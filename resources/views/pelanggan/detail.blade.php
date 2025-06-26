@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,17 +8,15 @@
     <title>{{ $obat->nama_obat }} - Apotek Puri</title>
     <link rel="stylesheet" href="{{ asset('css/pelanggan.css') }}">
 </head>
+
 <body>
     <!-- Header -->
     <header class="header">
         <div class="header-top">
-            <div class="logo">Medik</div>
+            <div class="logo">Apotek Puri Pasir Putih</div>
             <nav>
                 <ul class="nav-menu">
-                    <li><a href="/">Home</a></li>
-                    <li><a href="/#about">About</a></li>
-                    <li><a href="/#products">Products</a></li>
-                    <li><a href="/#contact">Contact</a></li>
+                    <li><a href="/pelanggan">Back</a></li>
                 </ul>
             </nav>
         </div>
@@ -28,8 +27,8 @@
         <div class="product-detail-content">
             <div class="product-detail-left">
                 <div class="product-detail-image">
-                    <img src="{{ $obat->gambar ? asset('storage/' . $obat->gambar) : asset('default-product.jpg') }}" 
-                         alt="{{ $obat->nama_obat }}">
+                    <img src="{{ $obat->gambar ? asset('storage/' . $obat->gambar) : asset('default-product.jpg') }}"
+                        alt="{{ $obat->nama_obat }}">
                 </div>
             </div>
             <div class="product-detail-right">
@@ -53,4 +52,5 @@
         </div>
     </div>
 </body>
+
 </html>

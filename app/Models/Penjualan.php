@@ -11,6 +11,8 @@ class Penjualan extends Model
         'nomor_nota',
         'tanggal_penjualan',
         'nama_pelanggan',
+        'nama_dokter',
+        'nomor_resep',
         'total_harga',
         'metode_pembayaran',
         'bayar',

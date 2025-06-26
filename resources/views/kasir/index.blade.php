@@ -8,6 +8,8 @@
     <title>Kasir - Apotek</title>
     <link rel="stylesheet" href="{{ asset('css/kasir.css') }}">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <!-- Select2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 </head>
 
 <body>
@@ -116,7 +118,7 @@
 
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="resepObatGrid">
                         @foreach ($obats as $obat)
-                            <div class="resep-obat-card bg-white p-4 rounded-lg shadow hover:shadow-md transition-shadow"
+                            <div class="resep-obat-card bg-white p-4 rounded-lg shadow hover:shadow-md transition-shadow cursor-pointer hover:bg-blue-50"
                                 data-id="{{ $obat->id }}" data-name="{{ $obat->nama_obat }}"
                                 data-price="{{ $obat->harga_jual }}">
                                 <div class="flex items-center space-x-4">
@@ -143,10 +145,6 @@
                                             value="1">
                                     </div>
                                 </div>
-                                <button
-                                    class="mt-3 w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 transition-colors">
-                                    Tambah ke Resep
-                                </button>
                             </div>
                         @endforeach
                     </div>
@@ -174,9 +172,13 @@
 
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Komposisi Racikan</label>
+                            <div class="mb-2">
+                                <input type="text" id="searchRacikan" class="w-full rounded-md border-gray-300 shadow-sm" 
+                                    placeholder="Cari obat untuk komposisi...">
+                            </div>
                             <div id="komposisi-container" class="space-y-2">
                                 <div class="flex items-center space-x-2">
-                                    <select class="flex-1 rounded-md border-gray-300 shadow-sm">
+                                    <select class="flex-1 rounded-md border-gray-300 shadow-sm racikan-obat-select">
                                         <option value="">Pilih obat</option>
                                         @foreach ($obats as $obat)
                                             <option value="{{ $obat->id }}" data-price="{{ $obat->harga_jual }}"
@@ -272,7 +274,7 @@
 
                     <div id="changeAmount" class="mb-3 hidden">
                         <label class="block text-sm font-medium text-gray-700 mb-1">Kembalian:</label>
-                        <div class="text-lg font-semibold text-green-600">Rp 0</div>
+                        <div id="changeDisplay" class="text-lg font-semibold text-green-600">Rp 0</div>
                     </div>
                 </div>
 
@@ -297,6 +299,9 @@
             }
         });
     </script>
+    <!-- Select2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script src="{{ asset('js/kasir.js') }}"></script>
 </body>
 

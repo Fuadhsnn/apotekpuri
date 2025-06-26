@@ -128,26 +128,50 @@ class ObatResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('kode_obat')
+                    ->label('Kode Obat')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('nama_obat')
+                    ->label('Nama Obat')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('kategori')
-                    ->searchable(),
+                    ->label('Kategori')
+                    ->badge()
+                    ->color(fn(string $state): string => match ($state) {
+                        'antibiotik' => 'success',
+                        'vitamin' => 'info',
+                        'analgesik' => 'warning',
+                        'antipiretik' => 'danger',
+                        'antihistamin' => 'primary',
+                        default => 'gray',
+                    }),
                 Tables\Columns\TextColumn::make('jenis_obat')
-                    ->searchable(),
+                    ->label('Jenis Obat')
+                    ->formatStateUsing(fn(string $state): string => match ($state) {
+                        'obat_bebas' => 'Obat Bebas',
+                        'obat_bebas_terbatas' => 'Obat Bebas Terbatas',
+                        'obat_keras' => 'Obat Keras',
+                        'narkotika' => 'Narkotika',
+                        default => $state,
+                    })
+                    ->badge()
+                    ->color(fn(string $state): string => match ($state) {
+                        'obat_bebas' => 'success',
+                        'obat_bebas_terbatas' => 'warning',
+                        'obat_keras' => 'danger',
+                        'Narkotika' => 'purple',
+                        default => 'gray',
+                    }),
                 Tables\Columns\TextColumn::make('stok')
-                    ->numeric()
+                    ->label('Stok')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('harga_jual')
+                    ->label('Harga Jual')
                     ->money('IDR')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('tanggal_kadaluarsa')
+                    ->label('Tanggal Kadaluarsa')
                     ->date()
                     ->sortable(),
-                Tables\Columns\ImageColumn::make('gambar')
-                    ->label('Gambar')
-                    ->circular()
-                    ->defaultImageUrl(url('/images/default-medicine.png')),
             ])
             ->filters([
                 //

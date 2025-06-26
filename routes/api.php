@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\SatusehatController;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,4 +17,11 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
+});
+
+// SatuSehat API Routes
+Route::prefix('satusehat')->group(function () {
+    Route::get('/medications', [SatusehatController::class, 'searchMedications']);
+    Route::get('/medications/{id}', [SatusehatController::class, 'getMedicationDetail']);
+    Route::post('/medications/import', [SatusehatController::class, 'importMedication']);
 });

@@ -9,18 +9,14 @@ return new class extends Migration
     public function up()
     {
         Schema::table('penjualans', function (Blueprint $table) {
-            $table->string('metode_pembayaran')->after('total_harga')->default('cash');
-            $table->foreignId('user_id')->after('tanggal_penjualan')
-                  ->constrained('users')
-                  ->onDelete('restrict');
-        });
-    }
+            // Cek apakah kolom sudah ada sebelum menambahkan
+            if (!Schema::hasColumn('penjualans', 'metode_pembayaran')) {
+                $table->string('metode_pembayaran', 255)->default('tunai')->after('total_harga');
+            }
 
-    public function down()
-    {
-        Schema::table('penjualans', function (Blueprint $table) {
-            $table->dropForeign(['user_id']);
-            $table->dropColumn(['metode_pembayaran', 'user_id']);
+            if (!Schema::hasColumn('penjualans', 'user_id')) {
+                $table->unsignedBigInteger('user_id')->after('tanggal_penjualan');
+            }
         });
     }
 };

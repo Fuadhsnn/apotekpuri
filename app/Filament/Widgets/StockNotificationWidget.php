@@ -8,6 +8,7 @@ use Filament\Widgets\Widget;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Filament\Notifications\Notification;
+use Livewire\Attributes\On;
 
 class StockNotificationWidget extends Widget
 {
@@ -58,7 +59,8 @@ class StockNotificationWidget extends Widget
                 ->send();
 
             // Dispatch browser event to refresh the component
-            $this->dispatchBrowserEvent('notification-marked-as-read');
+            // Memicu event yang akan didengarkan oleh metode refreshNotifications() di atas
+            $this->dispatch('stock-notifications-updated');
         }
     }
 }

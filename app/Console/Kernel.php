@@ -14,6 +14,16 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')->hourly();
         $schedule->command('app:check-low-stock')->daily()->at('08:00');
+        
+        // Jadwalkan impor obat dari SatuSehat setiap hari pada pukul 01:00 pagi
+        // Uncomment baris di bawah ini untuk mengaktifkan penjadwalan otomatis
+        // $schedule->command('satusehat:import-medications 100')->dailyAt('01:00');
+        
+        // Atau jadwalkan impor obat dari SatuSehat setiap minggu pada hari Senin pukul 01:00 pagi
+        // $schedule->command('satusehat:import-medications 100')->weeklyOn(1, '01:00');
+        
+        // Atau jadwalkan impor obat dari SatuSehat setiap bulan pada tanggal 1 pukul 01:00 pagi
+        // $schedule->command('satusehat:import-medications 100')->monthlyOn(1, '01:00');
     }
 
     /**

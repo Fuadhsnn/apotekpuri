@@ -13,6 +13,10 @@ class EditObat extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
+            Actions\Action::make('back')
+                ->label('Kembali')
+                ->icon('heroicon-o-arrow-left')
+                ->url($this->getResource()::getUrl('index')),
             Actions\DeleteAction::make(),
         ];
     }

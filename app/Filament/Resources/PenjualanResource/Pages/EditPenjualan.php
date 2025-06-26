@@ -13,6 +13,9 @@ class EditPenjualan extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
+            Actions\Action::make('back')
+                ->label('Kembali')
+                ->url($this->getResource()::getUrl('index')),
             Actions\DeleteAction::make(),
         ];
     }

@@ -40,6 +40,8 @@ class KasirController extends Controller
         try {
             $validated = $request->validate([
                 'customerName' => 'nullable|string|max:255', // Ubah dari required menjadi nullable
+                'doctorName' => 'nullable|string|max:255', // Nama dokter (opsional)
+                'prescriptionNumber' => 'nullable|string|max:255', // Nomor resep (opsional)
                 'paymentMethod' => 'required|string|in:Tunai,QRIS',
                 'amountReceived' => 'required_if:paymentMethod,Tunai|numeric|min:0', // Hanya wajib jika metode pembayaran Tunai
                 'orderItems' => 'required|array',
@@ -58,6 +60,8 @@ class KasirController extends Controller
                 'total_harga' => collect($validated['orderItems'])->sum(fn($item) => $item['price'] * $item['quantity']),
                 'metode_pembayaran' => $validated['paymentMethod'],
                 'nama_pelanggan' => $validated['customerName'],
+                'nama_dokter' => $validated['doctorName'] ?? null,
+                'nomor_resep' => $validated['prescriptionNumber'] ?? null,
                 'user_id' => auth()->id(),
                 'bayar' => $validated['amountReceived'],
                 'kembalian' => $validated['amountReceived'] - collect($validated['orderItems'])->sum(fn($item) => $item['price'] * $item['quantity']),
