@@ -54,12 +54,13 @@ class PenjualanReportResource extends Resource
                     ->label('Total')
                     ->money('IDR')
                     ->sortable(),
-                TextColumn::make('penjualanDetails.jumlah')
+                TextColumn::make('jumlah_item')
                     ->label('Jumlah Item')
-                    ->summarize([
-                        Tables\Columns\Summarizers\Sum::make()
-                            ->label('Total Item Terjual')
-                    ]),
+                    ->state(function ($record) {
+                        return $record->penjualanDetails->sum('jumlah') ?: 0;
+                    })
+                    ->sortable(false)
+                    ->searchable(false),
             ])
             ->filters([
                 Filter::make('tanggal')
@@ -114,7 +115,11 @@ class PenjualanReportResource extends Resource
             ])
             ->actions([])
             ->bulkActions([])
-            ->defaultSort('tanggal_penjualan', 'desc');
+            ->defaultSort('tanggal_penjualan', 'desc')
+            ->modifyQueryUsing(function ($query) {
+                return $query->with(['penjualanDetails.obat', 'user']);
+            })
+            ->recordUrl(null);
     }
 
     public static function getRelations(): array

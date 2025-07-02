@@ -5,6 +5,7 @@ use App\Http\Controllers\KasirController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\PelangganController;
 use App\Http\Controllers\QRCodeController;
+use App\Http\Controllers\PdfExportController;
 
 // Rute autentikasi
 Route::middleware('guest')->group(function () {
@@ -63,3 +64,6 @@ Route::get('/qrcode', [QRCodeController::class, 'generateQRCode'])->name('qrcode
 
 // Route untuk print struk
 Route::get('/kasir/print/{id}', [KasirController::class, 'printStruk'])->name('kasir.print')->middleware('auth');
+
+// Route untuk export PDF
+Route::get('/export/penjualan-pdf', [PdfExportController::class, 'exportPenjualan'])->name('export.penjualan.pdf')->middleware('auth');

@@ -19,7 +19,7 @@ class KasirController extends Controller
     public function getObat($id)
     {
         $obat = Obat::find($id);
-        return response()->json($obat);
+        return safe_json_response($obat);
     }
 
     public function search(Request $request)
@@ -31,7 +31,7 @@ class KasirController extends Controller
             ->orWhere('kategori', 'LIKE', "%{$query}%")
             ->get();
 
-        return response()->json($obats);
+        return safe_json_response($obats);
     }
 
     public function checkout(Request $request)
@@ -103,7 +103,7 @@ class KasirController extends Controller
             }
 
             DB::commit();
-            return response()->json([
+            return safe_json_response([
                 'success' => true, 
                 'message' => 'Transaksi berhasil diproses',
                 'penjualan_id' => $penjualan->id,
@@ -111,7 +111,10 @@ class KasirController extends Controller
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
-            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+            return safe_json_response([
+                'success' => false, 
+                'message' => clean_utf8($e->getMessage())
+            ], 500);
         }
     }
     

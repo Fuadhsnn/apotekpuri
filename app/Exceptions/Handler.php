@@ -27,4 +27,26 @@ class Handler extends ExceptionHandler
             //
         });
     }
+
+    /**
+     * Render an exception into an HTTP response.
+     */
+    public function render($request, Throwable $e)
+    {
+        // Handle UTF-8 encoding errors
+        if ($e instanceof \InvalidArgumentException && 
+            str_contains($e->getMessage(), 'Malformed UTF-8 characters')) {
+            
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'error' => 'Data encoding error',
+                    'message' => 'Invalid characters detected in data'
+                ], 500);
+            }
+            
+            return redirect()->back()->with('error', 'Terjadi kesalahan encoding data. Silakan coba lagi.');
+        }
+
+        return parent::render($request, $e);
+    }
 }

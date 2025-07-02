@@ -7,6 +7,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Kasir - Apotek</title>
     <link rel="stylesheet" href="{{ asset('css/kasir.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/kasir-alerts.css') }}">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <!-- Select2 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
@@ -310,7 +311,7 @@
     <!-- Select2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-    <script src="{{ asset('js/kasir.js') }}"></script>
+    <script src="{{ asset('js/kasir-fixed.js') }}"></script>
 </body>
 
 </html>

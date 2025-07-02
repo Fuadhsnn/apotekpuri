@@ -384,3 +384,407 @@ body {
     margin-top: 0.5rem;
     text-align: center;
 }
+
+/* Modern Alert Styles */
+.success-alert-overlay,
+.error-alert-overlay,
+.warning-alert-overlay,
+.info-alert-overlay,
+.loading-alert-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(5px);
+}
+
+.success-alert-overlay.show,
+.error-alert-overlay.show,
+.warning-alert-overlay.show,
+.info-alert-overlay.show,
+.loading-alert-overlay.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.success-alert-overlay.hide,
+.error-alert-overlay.hide,
+.warning-alert-overlay.hide,
+.info-alert-overlay.hide,
+.loading-alert-overlay.hide {
+    opacity: 0;
+    visibility: hidden;
+}
+
+.success-alert-modal,
+.error-alert-modal,
+.warning-alert-modal,
+.info-alert-modal,
+.loading-alert-modal {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    max-width: 500px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    transform: scale(0.7) translateY(50px);
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    animation: modalSlideIn 0.5s ease-out forwards;
+}
+
+@keyframes modalSlideIn {
+    0% {
+        transform: scale(0.7) translateY(50px);
+        opacity: 0;
+    }
+    100% {
+        transform: scale(1) translateY(0);
+        opacity: 1;
+    }
+}
+
+.success-alert-header,
+.error-alert-header,
+.warning-alert-header,
+.info-alert-header {
+    text-align: center;
+    padding: 40px 30px 20px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.success-icon,
+.error-icon,
+.warning-icon,
+.info-icon {
+    margin: 0 auto 20px;
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+    box-shadow: 0 10px 30px rgba(76, 175, 80, 0.3);
+    animation: iconPulse 2s infinite;
+}
+
+.error-icon {
+    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+    box-shadow: 0 10px 30px rgba(220, 53, 69, 0.3);
+}
+
+.warning-icon {
+    background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+    box-shadow: 0 10px 30px rgba(255, 152, 0, 0.3);
+}
+
+.info-icon {
+    background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+    box-shadow: 0 10px 30px rgba(33, 150, 243, 0.3);
+}
+
+@keyframes iconPulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+.success-alert-header h2,
+.error-alert-header h2,
+.warning-alert-header h2,
+.info-alert-header h2 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #333;
+    margin: 0 0 10px;
+    letter-spacing: -0.5px;
+}
+
+.success-message,
+.error-message,
+.warning-message,
+.info-message {
+    font-size: 16px;
+    color: #666;
+    margin: 0;
+    line-height: 1.5;
+}
+
+.success-alert-body {
+    padding: 30px;
+}
+
+.transaction-details {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.detail-row:last-child {
+    border-bottom: none;
+}
+
+.detail-row span:first-child {
+    color: #666;
+    font-weight: 500;
+}
+
+.detail-row span:last-child {
+    color: #333;
+    font-weight: 600;
+}
+
+.amount {
+    color: #4CAF50 !important;
+    font-size: 18px !important;
+    font-weight: 700 !important;
+}
+
+.payment-method {
+    background: #4CAF50;
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.qris-section {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    color: white;
+}
+
+.qris-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.qr-icon {
+    font-size: 40px;
+    animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+    }
+    40% {
+        transform: translateY(-10px);
+    }
+    60% {
+        transform: translateY(-5px);
+    }
+}
+
+.success-alert-footer,
+.error-alert-footer,
+.warning-alert-footer,
+.info-alert-footer {
+    padding: 20px 30px 30px;
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+}
+
+.btn-print,
+.btn-continue,
+.btn-retry,
+.btn-ok,
+.btn-ok-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    min-width: 140px;
+    justify-content: center;
+}
+
+.btn-print {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.btn-print:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.btn-continue {
+    background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+}
+
+.btn-continue:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+}
+
+.btn-retry {
+    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+}
+
+.btn-retry:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4);
+}
+
+.btn-ok {
+    background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(255, 152, 0, 0.3);
+}
+
+.btn-ok:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 152, 0, 0.4);
+}
+
+.btn-ok-info {
+    background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(33, 150, 243, 0.3);
+}
+
+.btn-ok-info:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(33, 150, 243, 0.4);
+}
+
+/* Loading Alert Specific Styles */
+.loading-alert-modal {
+    max-width: 300px;
+    text-align: center;
+    padding: 40px 30px;
+}
+
+.loading-message {
+    margin-top: 20px;
+    font-size: 16px;
+    color: #666;
+    font-weight: 500;
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+    .success-alert-modal,
+    .error-alert-modal,
+    .warning-alert-modal,
+    .info-alert-modal {
+        margin: 20px;
+        width: calc(100% - 40px);
+    }
+    
+    .success-alert-header,
+    .error-alert-header {
+        padding: 30px 20px 15px;
+    }
+    
+    .success-alert-body {
+        padding: 20px;
+    }
+    
+    .success-alert-footer,
+    .error-alert-footer {
+        padding: 15px 20px 25px;
+        flex-direction: column;
+    }
+    
+    .btn-print,
+    .btn-continue,
+    .btn-retry {
+        width: 100%;
+        min-width: auto;
+    }
+    
+    .success-alert-header h2,
+    .error-alert-header h2 {
+        font-size: 24px;
+    }
+    
+    .success-icon,
+    .error-icon {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .success-icon svg,
+    .error-icon svg {
+        width: 40px;
+        height: 40px;
+    }
+}
+
+/* Loading Animation */
+.loading-spinner {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: white;
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Confetti Animation */
+.confetti {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background: #4CAF50;
+    animation: confetti-fall 3s linear infinite;
+}
+
+@keyframes confetti-fall {
+    0% {
+        transform: translateY(-100vh) rotate(0deg);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(100vh) rotate(720deg);
+        opacity: 0;
+    }
+}

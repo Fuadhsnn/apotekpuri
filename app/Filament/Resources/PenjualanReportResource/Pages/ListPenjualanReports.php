@@ -4,6 +4,11 @@ namespace App\Filament\Resources\PenjualanReportResource\Pages;
 
 use App\Exports\PenjualanExport;
 use App\Exports\PenjualanDomPDFExport;
+use App\Exports\PenjualanSimplePDFExport;
+use App\Exports\PenjualanBasicPDFExport;
+use App\Exports\PenjualanSafePDFExport;
+use App\Exports\PenjualanStreamPDFExport;
+use App\Exports\PenjualanTempPDFExport;
 use App\Filament\Resources\PenjualanReportResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
@@ -24,14 +29,18 @@ class ListPenjualanReports extends ListRecords
                     return $export->download('laporan-penjualan-' . date('Y-m-d'));
                 }),
                 
-            Actions\Action::make('Cetak PDF')
-                ->label('Export PDF')
-                ->icon('heroicon-o-document')
-                ->color('danger')
+       
+                
+            Actions\Action::make('Cetak PDF ')
+                ->label('Export PDF ')
+                ->icon('heroicon-o-document-arrow-down')
+                ->color('warning')
                 ->action(function () {
-                    $export = new PenjualanDomPDFExport($this->getFilteredTableQuery());
+                    $export = new PenjualanTempPDFExport($this->getFilteredTableQuery());
                     return $export->download('laporan-penjualan-' . date('Y-m-d'));
                 }),
+                
+        
         ];
     }
 }

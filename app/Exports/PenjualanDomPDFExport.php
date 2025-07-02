@@ -29,34 +29,27 @@ class PenjualanDomPDFExport
             return '';
         }
 
-        // Konversi ke UTF-8 dan hapus karakter yang tidak valid
+        // Konversi ke string jika bukan string
+        if (!is_string($string)) {
+            $string = (string) $string;
+        }
+
+        // Hapus BOM jika ada
+        $string = str_replace("\xEF\xBB\xBF", '', $string);
+
+        // Konversi encoding yang aman
         $string = mb_convert_encoding($string, 'UTF-8', 'UTF-8');
 
-        // Mengganti karakter yang mungkin menyebabkan masalah
-        $string = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/u', '', $string);
+        // Hapus karakter control yang tidak diinginkan
+        $string = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/', '', $string);
 
-        // Mengganti karakter non-printable dengan spasi
-        $string = preg_replace('/[\p{C}]/u', ' ', $string);
+        // Pastikan string valid UTF-8
+        if (!mb_check_encoding($string, 'UTF-8')) {
+            $string = mb_convert_encoding($string, 'UTF-8', 'auto');
+        }
 
-        // Menghapus karakter UTF-8 yang tidak valid dengan pendekatan lain
-        $regex = <<<'END'
-/
-  [\x00-\x7F]++                      # ASCII
-| [\xC2-\xDF][\x80-\xBF]             # non-overlong 2-byte
-|  \xE0[\xA0-\xBF][\x80-\xBF]        # excluding overlongs
-| [\xE1-\xEC\xEE\xEF][\x80-\xBF]{2}  # straight 3-byte
-|  \xED[\x80-\x9F][\x80-\xBF]        # excluding surrogates
-|  \xF0[\x90-\xBF][\x80-\xBF]{2}     # planes 1-3
-| [\xF1-\xF3][\x80-\xBF]{3}          # planes 4-15
-|  \xF4[\x80-\x8F][\x80-\xBF]{2}     # plane 16
-/x
-END;
-
-        // Menghapus karakter UTF-8 yang tidak valid
-        $string = preg_replace('/[^\p{L}\p{N}\p{P}\p{Z}]/u', ' ', $string);
-        
-        // Konversi ke HTML entities untuk menghindari masalah encoding
-        $string = htmlspecialchars($string, ENT_QUOTES, 'UTF-8', false);
+        // Trim whitespace
+        $string = trim($string);
 
         return $string;
     }
@@ -137,87 +130,114 @@ END;
 
     public function download($filename)
     {
-        // Tambahkan filter tanggal dari session jika ada
-        $query = $this->query;
+        try {
+            // Tambahkan filter tanggal dari session jika ada
+            $query = $this->query;
 
-        $dariTanggal = Session::get('filter_dari_tanggal');
-        $sampaiTanggal = Session::get('filter_sampai_tanggal');
+            $dariTanggal = Session::get('filter_dari_tanggal');
+            $sampaiTanggal = Session::get('filter_sampai_tanggal');
 
-        if ($dariTanggal) {
-            $query->whereDate('tanggal_penjualan', '>=', $dariTanggal);
-        }
-
-        if ($sampaiTanggal) {
-            $query->whereDate('tanggal_penjualan', '<=', $sampaiTanggal);
-        }
-
-        $penjualans = $query->with('penjualanDetails.obat')->get();
-
-        // Bersihkan data dari karakter UTF-8 yang tidak valid
-        $penjualans = $this->cleanUtf8Data($penjualans);
-
-        // Konversi data tanggal ke format yang benar
-        $dariTanggalFormatted = $dariTanggal ? (is_string($dariTanggal) ? Carbon::parse($dariTanggal)->format('d/m/Y') : $dariTanggal->format('d/m/Y')) : null;
-        $sampaiTanggalFormatted = $sampaiTanggal ? (is_string($sampaiTanggal) ? Carbon::parse($sampaiTanggal)->format('d/m/Y') : $sampaiTanggal->format('d/m/Y')) : null;
-
-        // Pastikan data yang dikirim ke view sudah dalam format yang benar
-        $viewData = [
-            'penjualans' => $penjualans,
-            'tanggal' => date('d/m/Y'),
-            'dari_tanggal' => $dariTanggalFormatted,
-            'sampai_tanggal' => $sampaiTanggalFormatted,
-        ];
-
-        // Pastikan semua data penjualan memiliki format tanggal yang benar dan tidak ada karakter UTF-8 yang tidak valid
-        foreach ($penjualans as $penjualan) {
-            if ($penjualan->tanggal_penjualan && !($penjualan->tanggal_penjualan instanceof Carbon)) {
-                $penjualan->tanggal_penjualan = Carbon::parse($penjualan->tanggal_penjualan);
+            if ($dariTanggal) {
+                $query->whereDate('tanggal_penjualan', '>=', $dariTanggal);
             }
 
-            // Pastikan nama pelanggan tidak memiliki karakter UTF-8 yang tidak valid
-            if (isset($penjualan->nama_pelanggan)) {
-                $penjualan->nama_pelanggan = $this->cleanUtf8($penjualan->nama_pelanggan);
+            if ($sampaiTanggal) {
+                $query->whereDate('tanggal_penjualan', '<=', $sampaiTanggal);
             }
 
-            // Pastikan nomor nota tidak memiliki karakter UTF-8 yang tidak valid
-            if (isset($penjualan->nomor_nota)) {
-                $penjualan->nomor_nota = $this->cleanUtf8($penjualan->nomor_nota);
-            }
+            // Ambil data dengan eager loading
+            $penjualans = $query->with(['penjualanDetails.obat', 'user'])->get();
 
-            // Pastikan metode pembayaran tidak memiliki karakter UTF-8 yang tidak valid
-            if (isset($penjualan->metode_pembayaran)) {
-                $penjualan->metode_pembayaran = $this->cleanUtf8($penjualan->metode_pembayaran);
-            }
+            // Konversi data tanggal ke format yang benar
+            $dariTanggalFormatted = $dariTanggal ? (is_string($dariTanggal) ? Carbon::parse($dariTanggal)->format('d/m/Y') : $dariTanggal->format('d/m/Y')) : null;
+            $sampaiTanggalFormatted = $sampaiTanggal ? (is_string($sampaiTanggal) ? Carbon::parse($sampaiTanggal)->format('d/m/Y') : $sampaiTanggal->format('d/m/Y')) : null;
 
-            // Pastikan detail penjualan tidak memiliki karakter UTF-8 yang tidak valid
-            if ($penjualan->penjualanDetails) {
-                foreach ($penjualan->penjualanDetails as $detail) {
-                    if ($detail->obat && isset($detail->obat->nama_obat)) {
-                        $detail->obat->nama_obat = $this->cleanUtf8($detail->obat->nama_obat);
+            // Bersihkan dan format data
+            $cleanedPenjualans = [];
+            foreach ($penjualans as $penjualan) {
+                $cleanedPenjualan = [
+                    'id' => $penjualan->id,
+                    'nomor_nota' => $this->cleanUtf8($penjualan->nomor_nota ?? ''),
+                    'tanggal_penjualan' => $penjualan->tanggal_penjualan ? Carbon::parse($penjualan->tanggal_penjualan) : null,
+                    'nama_pelanggan' => $this->cleanUtf8($penjualan->nama_pelanggan ?? 'Pelanggan'),
+                    'total_harga' => (float) $penjualan->total_harga,
+                    'metode_pembayaran' => $this->cleanUtf8($penjualan->metode_pembayaran ?? ''),
+                    'bayar' => (float) $penjualan->bayar,
+                    'kembalian' => (float) $penjualan->kembalian,
+                    'penjualanDetails' => []
+                ];
+
+                // Bersihkan detail penjualan
+                if ($penjualan->penjualanDetails) {
+                    foreach ($penjualan->penjualanDetails as $detail) {
+                        $jumlahItem = (int) ($detail->jumlah ?? 0);
+                        
+                        $cleanedDetail = [
+                            'id' => $detail->id,
+                            'jumlah' => $jumlahItem,
+                            'harga' => (float) $detail->harga,
+                            'subtotal' => (float) $detail->subtotal,
+                            'obat' => null
+                        ];
+
+                        if ($detail->obat) {
+                            $cleanedDetail['obat'] = [
+                                'id' => $detail->obat->id,
+                                'nama_obat' => $this->cleanUtf8($detail->obat->nama_obat ?? ''),
+                                'kategori' => $this->cleanUtf8($detail->obat->kategori ?? ''),
+                            ];
+                        }
+
+                        $cleanedPenjualan['penjualanDetails'][] = (object) $cleanedDetail;
                     }
                 }
-            }
-        }
 
-        // Render view ke HTML menggunakan DomPDF
-        $pdf = PDF::loadView('exports.penjualan-pdf', $viewData);
-        
-        // Konfigurasi PDF dengan pengaturan yang lebih baik untuk menangani UTF-8
-        $pdf->setPaper('A4', 'portrait');
-        $pdf->setOptions([
-            'defaultFont' => 'sans-serif',
-            'isHtml5ParserEnabled' => true,
-            'isRemoteEnabled' => true,
-            'isPhpEnabled' => false,
-            'isFontSubsettingEnabled' => true,
-            'defaultMediaType' => 'print',
-            'defaultPaperSize' => 'a4',
-            'defaultPaperOrientation' => 'portrait',
-            'dpi' => 96,
-            'fontHeightRatio' => 1.1,
-        ]);
-        
-        // Download PDF
-        return $pdf->download($filename . '.pdf');
+                $cleanedPenjualans[] = (object) $cleanedPenjualan;
+            }
+
+            // Pastikan data yang dikirim ke view sudah dalam format yang benar
+            $viewData = [
+                'penjualans' => collect($cleanedPenjualans),
+                'tanggal' => date('d/m/Y'),
+                'dari_tanggal' => $dariTanggalFormatted,
+                'sampai_tanggal' => $sampaiTanggalFormatted,
+            ];
+
+            // Render view ke HTML menggunakan DomPDF
+            $pdf = PDF::loadView('exports.penjualan-pdf', $viewData);
+            
+            // Konfigurasi PDF dengan pengaturan yang lebih baik untuk menangani UTF-8
+            $pdf->setPaper('A4', 'portrait');
+            $pdf->setOptions([
+                'defaultFont' => 'DejaVu Sans',
+                'isHtml5ParserEnabled' => true,
+                'isRemoteEnabled' => false,
+                'isPhpEnabled' => false,
+                'isFontSubsettingEnabled' => true,
+                'defaultMediaType' => 'print',
+                'defaultPaperSize' => 'a4',
+                'defaultPaperOrientation' => 'portrait',
+                'dpi' => 96,
+                'fontHeightRatio' => 1.1,
+                'chroot' => public_path(),
+            ]);
+            
+            // Download PDF
+            return $pdf->download($filename . '.pdf');
+
+        } catch (\Exception $e) {
+            // Log error untuk debugging
+            \Log::error('PDF Export Error: ' . $e->getMessage(), [
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            // Bersihkan pesan error dari karakter UTF-8 yang bermasalah
+            $cleanErrorMessage = $this->cleanUtf8($e->getMessage());
+            
+            // Return error
+            abort(500, 'Gagal mengexport PDF: ' . $cleanErrorMessage);
+        }
     }
 }

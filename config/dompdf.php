@@ -17,9 +17,9 @@ return [
 
     /*
      * Dejavu Sans font is missing glyphs for converted entities, turn it off if you need to show € and £.
-     * Untuk mengatasi masalah karakter UTF-8 yang tidak valid, kita set ke false.
+     * Untuk mengatasi masalah karakter UTF-8 yang tidak valid, kita set ke true.
      */
-    'convert_entities' => false,
+    'convert_entities' => true,
 
     'options' => [
         /**
@@ -180,7 +180,7 @@ return [
          *
          * @var string
          */
-        'default_font' => 'serif',
+        'default_font' => 'DejaVu Sans',
 
         /**
          * Image DPI setting

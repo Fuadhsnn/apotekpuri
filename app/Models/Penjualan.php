@@ -34,4 +34,20 @@ class Penjualan extends Model
     {
         return $this->hasMany(PenjualanDetail::class, 'penjualan_id');
     }
+
+    /**
+     * Accessor untuk menghitung total item
+     */
+    public function getTotalItemsAttribute()
+    {
+        return $this->penjualanDetails->sum('jumlah');
+    }
+
+    /**
+     * Accessor untuk menghitung jumlah jenis obat
+     */
+    public function getJumlahJenisObatAttribute()
+    {
+        return $this->penjualanDetails->count();
+    }
 }

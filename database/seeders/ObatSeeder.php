@@ -660,6 +660,396 @@ class ObatSeeder extends Seeder
                 'harga_beli' => 25000,
                 'harga_jual' => 35000,
                 'tanggal_kadaluarsa' => Carbon::now()->addYears(1)->format('Y-m-d')
+            ],
+
+            // 51. Obat Batuk Pilek
+            [
+                'kode_obat' => 'OBFAR-' . $currentYear . '-051',
+                'nama_obat' => 'OBH Combi Batuk Flu',
+                'deskripsi' => 'Sirup obat batuk pilek dewasa',
+                'kategori' => 'respirasi',
+                'jenis_obat' => 'obat_bebas',
+                'stok' => 400,
+                'harga_beli' => 12000,
+                'harga_jual' => 18000,
+                'tanggal_kadaluarsa' => Carbon::now()->addYears(2)->format('Y-m-d')
+            ],
+
+            // 52. Obat Batuk Anak
+            [
+                'kode_obat' => 'OBMED-' . $currentYear . '-052',
+                'nama_obat' => 'Woods Peppermint Expectorant',
+                'deskripsi' => 'Sirup obat batuk berdahak',
+                'kategori' => 'respirasi',
+                'jenis_obat' => 'obat_bebas',
+                'stok' => 350,
+                'harga_beli' => 15000,
+                'harga_jual' => 22000,
+                'tanggal_kadaluarsa' => Carbon::now()->addYears(2)->format('Y-m-d')
+            ],
+
+            // 53. Obat Demam Anak
+            [
+                'kode_obat' => 'ANFAR-' . $currentYear . '-053',
+                'nama_obat' => 'Tempra Sirup 60ml',
+                'deskripsi' => 'Paracetamol sirup untuk anak',
+                'kategori' => 'analgesik',
+                'jenis_obat' => 'obat_bebas',
+                'stok' => 300,
+                'harga_beli' => 18000,
+                'harga_jual' => 25000,
+                'tanggal_kadaluarsa' => Carbon::now()->addYears(2)->format('Y-m-d')
+            ],
+
+            // 54. Obat Demam Anak
+            [
+                'kode_obat' => 'ANMED-' . $currentYear . '-054',
+                'nama_obat' => 'Proris Sirup 60ml',
+                'deskripsi' => 'Ibuprofen sirup untuk anak',
+                'kategori' => 'analgesik',
+                'jenis_obat' => 'obat_bebas',
+                'stok' => 280,
+                'harga_beli' => 20000,
+                'harga_jual' => 28000,
+                'tanggal_kadaluarsa' => Carbon::now()->addYears(2)->format('Y-m-d')
+            ],
+
+            // 55. Obat Diare
+            [
+                'kode_obat' => 'GAFAR-' . $currentYear . '-055',
+                'nama_obat' => 'Entrostop Tablet',
+                'deskripsi' => 'Obat diare dan sakit perut',
+                'kategori' => 'gastro',
+                'jenis_obat' => 'obat_bebas',
+                'stok' => 450,
+                'harga_beli' => 8000,
+                'harga_jual' => 12000,
+                'tanggal_kadaluarsa' => Carbon::now()->addYears(2)->format('Y-m-d')
+            ],
+
+            // 56. Obat Diare
+            [
+                'kode_obat' => 'GAMED-' . $currentYear . '-056',
+                'nama_obat' => 'Diapet NR Tablet',
+                'deskripsi' => 'Obat diare non resep',
+                'kategori' => 'gastro',
+                'jenis_obat' => 'obat_bebas',
+                'stok' => 380,
+                'harga_beli' => 6000,
+                'harga_jual' => 10000,
+                'tanggal_kadaluarsa' => Carbon::now()->addYears(1)->addMonths(6)->format('Y-m-d')
+            ],
+
+            // 57. Obat Maag
+            [
+                'kode_obat' => 'GAFAR-' . $currentYear . '-057',
+                'nama_obat' => 'Mylanta Tablet',
+                'deskripsi' => 'Antasida untuk maag',
+                'kategori' => 'gastro',
+                'jenis_obat' => 'obat_bebas',
+                'stok' => 400,
+                'harga_beli' => 10000,
+                'harga_jual' => 15000,
+                'tanggal_kadaluarsa' => Carbon::now()->addYears(2)->format('Y-m-d')
+            ],
+
+            // 58. Obat Maag
+            [
+                'kode_obat' => 'GAMED-' . $currentYear . '-058',
+                'nama_obat' => 'Promag Tablet',
+                'deskripsi' => 'Antasida untuk lambung',
+                'kategori' => 'gastro',
+                'jenis_obat' => 'obat_bebas',
+                'stok' => 420,
+                'harga_beli' => 8000,
+                'harga_jual' => 12000,
+                'tanggal_kadaluarsa' => Carbon::now()->addYears(2)->format('Y-m-d')
+            ],
+
+            // 59. Obat Pusing
+            [
+                'kode_obat' => 'ANFAR-' . $currentYear . '-059',
+                'nama_obat' => 'Bodrex Tablet',
+                'deskripsi' => 'Obat sakit kepala dan pusing',
+                'kategori' => 'analgesik',
+                'jenis_obat' => 'obat_bebas',
+                'stok' => 500,
+                'harga_beli' => 3000,
+                'harga_jual' => 5000,
+                'tanggal_kadaluarsa' => Carbon::now()->addYears(2)->format('Y-m-d')
+            ],
+
+            // 60. Obat Pusing
+            [
+                'kode_obat' => 'ANMED-' . $currentYear . '-060',
+                'nama_obat' => 'Paramex Tablet',
+                'deskripsi' => 'Obat sakit kepala dan demam',
+                'kategori' => 'analgesik',
+                'jenis_obat' => 'obat_bebas',
+                'stok' => 450,
+                'harga_beli' => 4000,
+                'harga_jual' => 6500,
+                'tanggal_kadaluarsa' => Carbon::now()->addYears(2)->format('Y-m-d')
+            ],
+
+            // 61. Obat Flu
+            [
+                'kode_obat' => 'REFAR-' . $currentYear . '-061',
+                'nama_obat' => 'Decolgen Tablet',
+                'deskripsi' => 'Obat flu dan hidung tersumbat',
+                'kategori' => 'respirasi',
+                'jenis_obat' => 'obat_bebas',
+                'stok' => 380,
+                'harga_beli' => 5000,
+                'harga_jual' => 8000,
+                'tanggal_kadaluarsa' => Carbon::now()->addYears(2)->format('Y-m-d')
+            ],
+
+            // 62. Obat Flu
+            [
+                'kode_obat' => 'REKIM-' . $currentYear . '-062',
+                'nama_obat' => 'Actifed Plus Expectorant',
+                'deskripsi' => 'Sirup obat flu dan batuk',
+                'kategori' => 'respirasi',
+                'jenis_obat' => 'obat_bebas',
+                'stok' => 320,
+                'harga_beli' => 18000,
+                'harga_jual' => 25000,
+                'tanggal_kadaluarsa' => Carbon::now()->addYears(1)->addMonths(6)->format('Y-m-d')
+            ],
+
+            // 63. Obat Alergi
+            [
+                'kode_obat' => 'REFAR-' . $currentYear . '-063',
+                'nama_obat' => 'Incidal OD Tablet',
+                'deskripsi' => 'Antihistamin untuk alergi',
+                'kategori' => 'respirasi',
+                'jenis_obat' => 'obat_bebas_terbatas',
+                'stok' => 300,
+                'harga_beli' => 8000,
+                'harga_jual' => 12000,
+                'tanggal_kadaluarsa' => Carbon::now()->addYears(2)->format('Y-m-d')
+            ],
+
+            // 64. Obat Alergi
+            [
+                'kode_obat' => 'REKIM-' . $currentYear . '-064',
+                'nama_obat' => 'Loratadine 10mg',
+                'deskripsi' => 'Antihistamin non sedatif',
+                'kategori' => 'respirasi',
+                'jenis_obat' => 'obat_bebas_terbatas',
+                'stok' => 350,
+                'harga_beli' => 6000,
+                'harga_jual' => 10000,
+                'tanggal_kadaluarsa' => Carbon::now()->addYears(2)->format('Y-m-d')
+            ],
+
+            // 65. Obat Luka
+            [
+                'kode_obat' => 'TOFAR-' . $currentYear . '-065',
+                'nama_obat' => 'Betadine Solution 60ml',
+                'deskripsi' => 'Antiseptik untuk luka',
+                'kategori' => 'topikal',
+                'jenis_obat' => 'obat_bebas',
+                'stok' => 400,
+                'harga_beli' => 15000,
+                'harga_jual' => 22000,
+                'tanggal_kadaluarsa' => Carbon::now()->addYears(3)->format('Y-m-d')
+            ],
+
+            // 66. Obat Luka
+            [
+                'kode_obat' => 'TOKIM-' . $currentYear . '-066',
+                'nama_obat' => 'Rivanol 0.1% Solution',
+                'deskripsi' => 'Antiseptik untuk cuci luka',
+                'kategori' => 'topikal',
+                'jenis_obat' => 'obat_bebas',
+                'stok' => 350,
+                'harga_beli' => 8000,
+                'harga_jual' => 12000,
+                'tanggal_kadaluarsa' => Carbon::now()->addYears(2)->format('Y-m-d')
+            ],
+
+            // 67. Obat Gatal
+            [
+                'kode_obat' => 'DEFAR-' . $currentYear . '-067',
+                'nama_obat' => 'Calamine Lotion 60ml',
+                'deskripsi' => 'Obat gatal dan iritasi kulit',
+                'kategori' => 'dermatologi',
+                'jenis_obat' => 'obat_bebas',
+                'stok' => 380,
+                'harga_beli' => 10000,
+                'harga_jual' => 15000,
+                'tanggal_kadaluarsa' => Carbon::now()->addYears(2)->format('Y-m-d')
+            ],
+
+            // 68. Obat Gatal
+            [
+                'kode_obat' => 'DEMED-' . $currentYear . '-068',
+                'nama_obat' => 'Fenistil Gel 30g',
+                'deskripsi' => 'Gel antihistamin untuk gatal',
+                'kategori' => 'dermatologi',
+                'jenis_obat' => 'obat_bebas',
+                'stok' => 320,
+                'harga_beli' => 25000,
+                'harga_jual' => 35000,
+                'tanggal_kadaluarsa' => Carbon::now()->addYears(2)->format('Y-m-d')
+            ],
+
+            // 69. Obat Jerawat
+            [
+                'kode_obat' => 'DEFAR-' . $currentYear . '-069',
+                'nama_obat' => 'Benzolac 2.5% Gel',
+                'deskripsi' => 'Gel untuk jerawat',
+                'kategori' => 'dermatologi',
+                'jenis_obat' => 'obat_bebas',
+                'stok' => 280,
+                'harga_beli' => 18000,
+                'harga_jual' => 25000,
+                'tanggal_kadaluarsa' => Carbon::now()->addYears(1)->addMonths(6)->format('Y-m-d')
+            ],
+
+            // 70. Obat Jerawat
+            [
+                'kode_obat' => 'DEMED-' . $currentYear . '-070',
+                'nama_obat' => 'Acnes Sealing Gel',
+                'deskripsi' => 'Gel pengering jerawat',
+                'kategori' => 'dermatologi',
+                'jenis_obat' => 'obat_bebas',
+                'stok' => 300,
+                'harga_beli' => 12000,
+                'harga_jual' => 18000,
+                'tanggal_kadaluarsa' => Carbon::now()->addYears(2)->format('Y-m-d')
+            ],
+
+            // 71. Obat Mata
+            [
+                'kode_obat' => 'OFFAR-' . $currentYear . '-071',
+                'nama_obat' => 'Insto Dry Eyes',
+                'deskripsi' => 'Tetes mata untuk mata kering',
+                'kategori' => 'oftalmologi',
+                'jenis_obat' => 'obat_bebas',
+                'stok' => 250,
+                'harga_beli' => 12000,
+                'harga_jual' => 18000,
+                'tanggal_kadaluarsa' => Carbon::now()->addYears(2)->format('Y-m-d')
+            ],
+
+            // 72. Obat Mata
+            [
+                'kode_obat' => 'OFKIM-' . $currentYear . '-072',
+                'nama_obat' => 'Visine Original',
+                'deskripsi' => 'Tetes mata untuk mata merah',
+                'kategori' => 'oftalmologi',
+                'jenis_obat' => 'obat_bebas',
+                'stok' => 280,
+                'harga_beli' => 15000,
+                'harga_jual' => 22000,
+                'tanggal_kadaluarsa' => Carbon::now()->addYears(2)->format('Y-m-d')
+            ],
+
+            // 73. Obat Mabuk Perjalanan
+            [
+                'kode_obat' => 'GAFAR-' . $currentYear . '-073',
+                'nama_obat' => 'Antimo Tablet',
+                'deskripsi' => 'Obat mabuk perjalanan',
+                'kategori' => 'gastro',
+                'jenis_obat' => 'obat_bebas',
+                'stok' => 400,
+                'harga_beli' => 5000,
+                'harga_jual' => 8000,
+                'tanggal_kadaluarsa' => Carbon::now()->addYears(2)->format('Y-m-d')
+            ],
+
+            // 74. Obat Mabuk Perjalanan
+            [
+                'kode_obat' => 'GAMED-' . $currentYear . '-074',
+                'nama_obat' => 'Dramamine Tablet',
+                'deskripsi' => 'Obat anti mual perjalanan',
+                'kategori' => 'gastro',
+                'jenis_obat' => 'obat_bebas',
+                'stok' => 350,
+                'harga_beli' => 8000,
+                'harga_jual' => 12000,
+                'tanggal_kadaluarsa' => Carbon::now()->addYears(2)->format('Y-m-d')
+            ],
+
+            // 75. Obat Kuat/Stamina
+            [
+                'kode_obat' => 'HEFAR-' . $currentYear . '-075',
+                'nama_obat' => 'Kuku Bima Energi',
+                'deskripsi' => 'Minuman herbal penambah stamina',
+                'kategori' => 'herbal',
+                'jenis_obat' => 'obat_bebas',
+                'stok' => 300,
+                'harga_beli' => 8000,
+                'harga_jual' => 12000,
+                'tanggal_kadaluarsa' => Carbon::now()->addYears(2)->format('Y-m-d')
+            ],
+
+            // 76. Obat Kuat/Stamina
+            [
+                'kode_obat' => 'HEMED-' . $currentYear . '-076',
+                'nama_obat' => 'Extra Joss Sachet',
+                'deskripsi' => 'Minuman penambah energi',
+                'kategori' => 'herbal',
+                'jenis_obat' => 'obat_bebas',
+                'stok' => 500,
+                'harga_beli' => 3000,
+                'harga_jual' => 5000,
+                'tanggal_kadaluarsa' => Carbon::now()->addYears(2)->format('Y-m-d')
+            ],
+
+            // 77. Obat Tidur
+            [
+                'kode_obat' => 'NEFAR-' . $currentYear . '-077',
+                'nama_obat' => 'Lelap Tablet',
+                'deskripsi' => 'Obat herbal untuk tidur',
+                'kategori' => 'neurologi',
+                'jenis_obat' => 'obat_bebas',
+                'stok' => 200,
+                'harga_beli' => 15000,
+                'harga_jual' => 22000,
+                'tanggal_kadaluarsa' => Carbon::now()->addYears(2)->format('Y-m-d')
+            ],
+
+            // 78. Obat Cacing
+            [
+                'kode_obat' => 'ANFAR-' . $currentYear . '-078',
+                'nama_obat' => 'Combantrin Tablet',
+                'deskripsi' => 'Obat cacing untuk dewasa',
+                'kategori' => 'antiparasit',
+                'jenis_obat' => 'obat_bebas',
+                'stok' => 300,
+                'harga_beli' => 8000,
+                'harga_jual' => 12000,
+                'tanggal_kadaluarsa' => Carbon::now()->addYears(2)->format('Y-m-d')
+            ],
+
+            // 79. Obat Cacing Anak
+            [
+                'kode_obat' => 'ANMED-' . $currentYear . '-079',
+                'nama_obat' => 'Combantrin Sirup',
+                'deskripsi' => 'Obat cacing untuk anak',
+                'kategori' => 'antiparasit',
+                'jenis_obat' => 'obat_bebas',
+                'stok' => 250,
+                'harga_beli' => 12000,
+                'harga_jual' => 18000,
+                'tanggal_kadaluarsa' => Carbon::now()->addYears(2)->format('Y-m-d')
+            ],
+
+            // 80. Obat Wasir
+            [
+                'kode_obat' => 'GAFAR-' . $currentYear . '-080',
+                'nama_obat' => 'Boraginol N Salep',
+                'deskripsi' => 'Salep untuk wasir',
+                'kategori' => 'gastro',
+                'jenis_obat' => 'obat_bebas',
+                'stok' => 180,
+                'harga_beli' => 25000,
+                'harga_jual' => 35000,
+                'tanggal_kadaluarsa' => Carbon::now()->addYears(2)->format('Y-m-d')
             ]
 
         ];
