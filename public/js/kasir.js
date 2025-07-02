@@ -488,7 +488,22 @@ document.addEventListener('DOMContentLoaded', function () {
                     } else {
                         alert('Transaksi berhasil!');
                     }
-                    window.location.reload();
+                    
+                    // Buka struk dalam tab baru
+                    if (data.penjualan_id) {
+                        const printWindow = window.open(`/kasir/print/${data.penjualan_id}`, '_blank');
+                        if (printWindow) {
+                            // Reload halaman setelah struk dibuka
+                            setTimeout(() => {
+                                window.location.reload();
+                            }, 1000);
+                        } else {
+                            alert('Popup diblokir oleh browser. Mohon izinkan popup untuk mencetak struk.');
+                            window.location.reload();
+                        }
+                    } else {
+                        window.location.reload();
+                    }
                 } else {
                     alert('Transaksi gagal: ' + data.message);
                 }

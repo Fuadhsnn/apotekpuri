@@ -10,6 +10,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
+use Filament\Notifications\Notification;
 
 class ObatResource extends Resource
 {
@@ -178,11 +179,67 @@ class ObatResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\DeleteAction::make()
+                    ->before(function ($record, $action) {
+                        // Periksa apakah obat tersebut memiliki catatan terkait
+                        $hasPenjualanDetails = $record->penjualanDetails()->exists();
+                        $hasPembelianDetails = $record->pembelianDetails()->exists();
+
+                        if ($hasPenjualanDetails || $hasPembelianDetails) {
+                            $relatedRecords = [];
+
+                            if ($hasPenjualanDetails) {
+                                $relatedRecords[] = 'penjualan (penjualan)';
+                            }
+
+                            if ($hasPembelianDetails) {
+                                $relatedRecords[] = 'pembelian (pembelian)';
+                            }
+
+                            $relatedRecordsText = implode(' dan ', $relatedRecords);
+
+                            // Tampilkan pemberitahuan dan hentikan tindakan
+                            Notification::make()
+                                ->danger()
+                                ->title('Obatnya tidak bisa dihilangkan')
+                                ->body("Obat ini memiliki catatan terkait di {$relatedRecordsText}. Hapus terlebih dahulu rekaman tersebut atau nonaktifkan batasan kunci asing dalam basis data.")
+                                ->persistent()
+                                ->send();
+
+                            $action->halt();
+                        }
+                    }),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\DeleteBulkAction::make()
+                        ->before(function ($records, $action) {
+                            // Periksa apakah ada obat yang memiliki catatan terkait
+                            $medicamentosConRelaciones = [];
+
+                            foreach ($records as $record) {
+                                $hasPenjualanDetails = $record->penjualanDetails()->exists();
+                                $hasPembelianDetails = $record->pembelianDetails()->exists();
+
+                                if ($hasPenjualanDetails || $hasPembelianDetails) {
+                                    $medicamentosConRelaciones[] = $record->nama_obat;
+                                }
+                            }
+
+                            if (count($medicamentosConRelaciones) > 0) {
+                                $medicamentosText = implode(', ', $medicamentosConRelaciones);
+
+                                // Tampilkan pemberitahuan dan hentikan tindakan
+                                Notification::make()
+                                    ->danger()
+                                    ->title('Anda tidak dapat menghilangkan beberapa obat')
+                                    ->body("Obat-obatan berikut ini memiliki registrasi yang terkait dan tidak dapat dihilangkan: {$medicamentosText}. Hilangkan registrasi pertama atau nonaktifkan batasan foreign key di basis data.")
+                                    ->persistent()
+                                    ->send();
+
+                                $action->halt();
+                            }
+                        }),
                 ]),
             ]);
     }

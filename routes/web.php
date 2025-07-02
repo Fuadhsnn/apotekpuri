@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\KasirController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\PelangganController;
+use App\Http\Controllers\QRCodeController;
 
 // Rute autentikasi
 Route::middleware('guest')->group(function () {
@@ -56,3 +57,9 @@ Route::get('/contoh', function () {
     return view('contoh-kasir');
 });
 Route::post('/kasir/checkout', [KasirController::class, 'checkout'])->name('kasir.checkout')->middleware('auth');
+
+// Route untuk QR Code
+Route::get('/qrcode', [QRCodeController::class, 'generateQRCode'])->name('qrcode.generate');
+
+// Route untuk print struk
+Route::get('/kasir/print/{id}', [KasirController::class, 'printStruk'])->name('kasir.print')->middleware('auth');

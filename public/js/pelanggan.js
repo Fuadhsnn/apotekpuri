@@ -1,20 +1,83 @@
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM fully loaded');
     loadProducts();
     
     // Setup search functionality
     const searchInput = document.getElementById('searchInput');
     const searchButton = document.getElementById('searchButton');
     
-    // Search when button is clicked
-    searchButton.addEventListener('click', function() {
-        searchProducts(searchInput.value);
-    });
+    // Ensure search input is focused and working
+    if (searchInput) {
+        // Force focus to work
+        searchInput.addEventListener('click', function() {
+            this.focus();
+        });
+        
+        // Make sure input is not disabled
+        searchInput.disabled = false;
+        searchInput.style.pointerEvents = 'auto';
+    }
     
-    // Search when Enter key is pressed
-    searchInput.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
+    if (searchInput && searchButton) {
+        console.log('Search elements found');
+        
+        // Search when button is clicked
+        searchButton.addEventListener('click', function(e) {
+            e.preventDefault();
+            console.log('Search button clicked');
             searchProducts(searchInput.value);
+        });
+        
+        // Search when Enter key is pressed
+        searchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                console.log('Enter key pressed in search');
+                searchProducts(searchInput.value);
+            }
+        });
+    } else {
+        console.error('Search elements not found');
+    }
+    
+    // Close modal when clicking outside
+    window.addEventListener('click', function(event) {
+        const modal = document.getElementById('productModal');
+        if (modal && event.target === modal) {
+            closeModal();
         }
+    });
+
+    // Close modal when clicking the close button
+    const closeButton = document.querySelector('.close-modal');
+    if (closeButton) {
+        closeButton.addEventListener('click', closeModal);
+    }
+    
+    // Navigation functionality removed as per user request
+    
+    // Smooth scrolling for navigation links
+    const anchors = document.querySelectorAll('a[href^="#"]');
+    console.log('Found', anchors.length, 'anchor links');
+    
+    anchors.forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            console.log('Anchor clicked:', this.getAttribute('href'));
+            
+            const targetId = this.getAttribute('href');
+            if (targetId === '#') return;
+            
+            const targetElement = document.querySelector(targetId);
+            if (targetElement) {
+                console.log('Scrolling to', targetId);
+                targetElement.scrollIntoView({
+                    behavior: 'smooth'
+                });
+            } else {
+                console.error('Target element not found:', targetId);
+            }
+        });
     });
 });
 

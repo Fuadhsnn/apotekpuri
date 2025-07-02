@@ -13,7 +13,7 @@ use Filament\Tables\Columns\TextColumn;
 class ViewPenjualanReport extends Page
 {
     protected static string $resource = PenjualanReportResource::class;
-    protected static string $view = 'filament.resources.penjualan-report-resource.pages.view-penjualan-report';
+    protected static string $view = 'view-penjualan-report';
 
     public Penjualan $record;
 

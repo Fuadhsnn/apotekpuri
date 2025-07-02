@@ -16,6 +16,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\Filter;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Tables\Actions\ExportAction;
+use Illuminate\Support\Facades\Session;
 
 class PenjualanReportResource extends Resource
 {
@@ -69,6 +70,15 @@ class PenjualanReportResource extends Resource
                             ->label('Sampai Tanggal'),
                     ])
                     ->query(function (Builder $query, array $data): Builder {
+                        // Simpan filter tanggal ke session untuk digunakan saat ekspor
+                        if (isset($data['dari_tanggal'])) {
+                            Session::put('filter_dari_tanggal', $data['dari_tanggal']);
+                        }
+
+                        if (isset($data['sampai_tanggal'])) {
+                            Session::put('filter_sampai_tanggal', $data['sampai_tanggal']);
+                        }
+
                         return $query
                             ->when(
                                 $data['dari_tanggal'],
@@ -80,10 +90,14 @@ class PenjualanReportResource extends Resource
                             );
                     })
                     ->indicateUsing(function (array $data): ?string {
-                        if (!$data['dari_tanggal'] || !$data['sampai_tanggal']) {
+                        if (!isset($data['dari_tanggal']) || !isset($data['sampai_tanggal']) || !$data['dari_tanggal'] || !$data['sampai_tanggal']) {
                             return null;
                         }
-                        return 'Tanggal: ' . $data['dari_tanggal']->format('d/m/Y') . ' - ' . $data['sampai_tanggal']->format('d/m/Y');
+
+                        $dariTanggal = $data['dari_tanggal'] instanceof \Carbon\Carbon ? $data['dari_tanggal']->format('d/m/Y') : $data['dari_tanggal'];
+                        $sampaiTanggal = $data['sampai_tanggal'] instanceof \Carbon\Carbon ? $data['sampai_tanggal']->format('d/m/Y') : $data['sampai_tanggal'];
+
+                        return 'Tanggal: ' . $dariTanggal . ' - ' . $sampaiTanggal;
                     }),
                 SelectFilter::make('obat_id')
                     ->label('Obat')
@@ -98,12 +112,7 @@ class PenjualanReportResource extends Resource
                     ->searchable()
                     ->preload(),
             ])
-            ->actions([
-                Tables\Actions\Action::make('detail')
-                    ->label('Detail')
-                    ->icon('heroicon-o-eye')
-                    ->url(fn(Penjualan $record): string => PenjualanReportResource::getUrl('detail', ['record' => $record])),
-            ])
+            ->actions([])
             ->bulkActions([])
             ->defaultSort('tanggal_penjualan', 'desc');
     }

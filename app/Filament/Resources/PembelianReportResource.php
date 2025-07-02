@@ -101,12 +101,7 @@ class PembelianReportResource extends Resource
                     ])
                     ->label('Status Pembayaran'),
             ])
-            ->actions([
-                Tables\Actions\Action::make('detail')
-                    ->label('Detail')
-                    ->icon('heroicon-o-eye')
-                    ->url(fn(Pembelian $record): string => PembelianReportResource::getUrl('detail', ['record' => $record])),
-            ])
+            ->actions([])
             ->bulkActions([])
             ->defaultSort('tanggal_pembelian', 'desc');
     }

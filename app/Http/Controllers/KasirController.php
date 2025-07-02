@@ -103,10 +103,21 @@ class KasirController extends Controller
             }
 
             DB::commit();
-            return response()->json(['success' => true, 'message' => 'Transaksi berhasil diproses']);
+            return response()->json([
+                'success' => true, 
+                'message' => 'Transaksi berhasil diproses',
+                'penjualan_id' => $penjualan->id,
+                'nomor_nota' => $nomorNota
+            ]);
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
         }
+    }
+    
+    public function printStruk($id)
+    {
+        $penjualan = Penjualan::with('penjualanDetails.obat', 'user')->findOrFail($id);
+        return view('kasir.struk', compact('penjualan'));
     }
 }
