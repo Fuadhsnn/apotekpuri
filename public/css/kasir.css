@@ -37,13 +37,31 @@ body {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
-    padding-bottom: 15px;
-    border-bottom: 1px solid #e0e0e0;
+    padding: 15px 20px;
+    border-bottom: none;
+    background: linear-gradient(135deg, #4CAF50, #2E7D32);
+    border-radius: var(--border-radius);
+    box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
 }
 
 .header h1 {
-    color: var(--primary);
-    font-size: 24px;
+    color: white;
+    font-size: 28px;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+    position: relative;
+    padding-left: 40px;
+    letter-spacing: 0.5px;
+}
+
+.header h1::before {
+    content: "💊";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 28px;
+    filter: drop-shadow(2px 2px 3px rgba(0, 0, 0, 0.2));
 }
 
 .order-info {
@@ -127,6 +145,24 @@ body {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
     gap: 15px;
+    max-height: 70vh; /* Tinggi maksimum 70% dari viewport height */
+    overflow-y: auto; /* Memungkinkan scroll vertikal */
+    padding-right: 10px; /* Memberikan ruang untuk scrollbar */
+    -webkit-overflow-scrolling: touch; /* Untuk performa scroll yang lebih baik di iOS */
+    scrollbar-width: thin; /* Untuk Firefox */
+}
+
+.product-grid::-webkit-scrollbar {
+    width: 6px;
+}
+
+.product-grid::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
+}
+
+.product-grid::-webkit-scrollbar-track {
+    background-color: rgba(0, 0, 0, 0.05);
 }
 
 .product-card {

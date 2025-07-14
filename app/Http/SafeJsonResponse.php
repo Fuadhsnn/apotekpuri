@@ -10,11 +10,11 @@ class SafeJsonResponse extends JsonResponse
     /**
      * Set the data that should be JSON encoded.
      */
-    public function setData($data = [])
+    public function setData($data = []): static   // ← tambahkan “: static”
     {
         // Clean data before encoding
         $cleanData = StringHelper::cleanData($data);
-        
+
         // Use safe JSON encoding
         $this->data = StringHelper::safeJsonEncode($cleanData, $this->encodingOptions);
 

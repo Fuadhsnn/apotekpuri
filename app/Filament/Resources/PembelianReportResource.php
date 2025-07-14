@@ -59,6 +59,9 @@ class PembelianReportResource extends Resource
                     }),
                 TextColumn::make('pembelianDetails.jumlah')
                     ->label('Jumlah Item')
+                    ->state(function ($record) {
+                        return $record->pembelianDetails->sum('jumlah') ?: 0;
+                    })
                     ->summarize([
                         Tables\Columns\Summarizers\Sum::make()
                             ->label('Total Item Dibeli')
@@ -87,7 +90,16 @@ class PembelianReportResource extends Resource
                         if (!$data['dari_tanggal'] || !$data['sampai_tanggal']) {
                             return null;
                         }
-                        return 'Tanggal: ' . $data['dari_tanggal']->format('d/m/Y') . ' - ' . $data['sampai_tanggal']->format('d/m/Y');
+
+                        $dariTanggalFormatted = is_object($data['dari_tanggal']) && method_exists($data['dari_tanggal'], 'format')
+                            ? $data['dari_tanggal']->format('d/m/Y')
+                            : $data['dari_tanggal'];
+
+                        $sampaiTanggalFormatted = is_object($data['sampai_tanggal']) && method_exists($data['sampai_tanggal'], 'format')
+                            ? $data['sampai_tanggal']->format('d/m/Y')
+                            : $data['sampai_tanggal'];
+
+                        return 'Tanggal: ' . $dariTanggalFormatted . ' - ' . $sampaiTanggalFormatted;
                     }),
                 SelectFilter::make('supplier')
                     ->relationship('supplier', 'nama_supplier')

@@ -3,7 +3,7 @@
 
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
-    <title>Laporan Penjualan</title>
+    <title>Laporan Pembelian</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -76,7 +76,7 @@
 
 <body>
     <div class="header">
-        <h1>LAPORAN PENJUALAN OBAT</h1>
+        <h1>LAPORAN PEMBELIAN OBAT</h1>
         <p>Apotek Puri Pasir Putih</p>
         @if (isset($dari_tanggal) && isset($sampai_tanggal) && $dari_tanggal && $sampai_tanggal)
             <p>Periode: {{ $dari_tanggal }} - {{ $sampai_tanggal }}</p>
@@ -88,41 +88,32 @@
         <thead>
             <tr>
                 <th class="text-center" style="width: 5%;">No</th>
-                <th style="width: 20%;">No. Nota</th>
+                <th style="width: 20%;">No. Faktur</th>
                 <th class="text-center" style="width: 12%;">Tanggal</th>
-                <th style="width: 23%;">Pelanggan</th>
+                <th style="width: 23%;">Supplier</th>
+                <th class="text-center" style="width: 15%;">Status</th>
                 <th class="text-right" style="width: 15%;">Total</th>
-                <th class="text-center" style="width: 15%;">Metode</th>
                 <th class="text-center" style="width: 10%;">Item</th>
             </tr>
         </thead>
         <tbody>
-            @foreach ($penjualans as $index => $penjualan)
+            @foreach ($pembelians as $index => $pembelian)
                 <tr>
                     <td class="text-center">{{ $index + 1 }}</td>
-                    <td>{{ $penjualan['nomor_nota'] }}</td>
-                    <td class="text-center">{{ $penjualan['tanggal_penjualan'] }}</td>
-                    <td>{{ $penjualan['nama_pelanggan'] }}</td>
-                    <td class="text-right">Rp {{ number_format($penjualan['total_harga'], 0, ',', '.') }}</td>
-                    <td class="text-center">{{ $penjualan['metode_pembayaran'] }}</td>
-                    <td class="text-center">{{ $penjualan['jumlah_item'] }}</td>
+                    <td>{{ $pembelian['nomor_faktur'] }}</td>
+                    <td class="text-center">{{ $pembelian['tanggal_pembelian'] }}</td>
+                    <td>{{ $pembelian['nama_supplier'] }}</td>
+                    <td class="text-center">{{ $pembelian['status_pembayaran'] }}</td>
+                    <td class="text-right">Rp {{ number_format($pembelian['total_harga'], 0, ',', '.') }}</td>
+                    <td class="text-center">{{ $pembelian['jumlah_item'] }}</td>
                 </tr>
             @endforeach
         </tbody>
         <tfoot>
             <tr class="total-row">
-                <th colspan="4" class="text-right">Total:</th>
+                <th colspan="5" class="text-right">Total:</th>
                 <th class="text-right">Rp {{ number_format($total_keseluruhan, 0, ',', '.') }}</th>
                 <th class="text-center">{{ $total_transaksi }} Transaksi</th>
-                <th class="text-center">
-                    @php
-                        $totalItemKeseluruhan = 0;
-                        foreach ($penjualans as $penjualan) {
-                            $totalItemKeseluruhan += $penjualan['jumlah_item'];
-                        }
-                    @endphp
-                    {{ $totalItemKeseluruhan }} Item
-                </th>
             </tr>
         </tfoot>
     </table>

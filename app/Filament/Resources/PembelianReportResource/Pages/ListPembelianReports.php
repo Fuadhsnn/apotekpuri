@@ -4,6 +4,8 @@ namespace App\Filament\Resources\PembelianReportResource\Pages;
 
 use App\Exports\PembelianExport;
 use App\Exports\PembelianDomPDFExport;
+use App\Exports\PembelianSafePDFExport;
+use App\Exports\PembelianTempPDFExport;
 use App\Filament\Resources\PembelianReportResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
@@ -69,7 +71,7 @@ class ListPembelianReports extends ListRecords
                         Session::put('filter_sampai_tanggal', $sampaiTanggal);
                     }
                     
-                    $export = new PembelianDomPDFExport($this->getFilteredTableQuery());
+                    $export = new PembelianTempPDFExport($this->getFilteredTableQuery());
                     return $export->download('laporan-pembelian-' . date('Y-m-d'));
                 }),
         ];

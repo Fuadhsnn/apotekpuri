@@ -417,7 +417,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Event untuk checkout
     checkoutBtn.addEventListener('click', function () {
         if (orderItems.length === 0) {
-            showWarningAlert('Keranjang masih kosong!', 'Silahkan tambahkan obat ke keranjang terlebih dahulu.');
+            alert('Keranjang masih kosong!');
             return;
         }
 
@@ -455,10 +455,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (paymentMethod === 'QRIS') {
             // Lanjutkan proses checkout tanpa validasi receivedAmount
         } else if (!receivedAmount) {
-            showWarningAlert('Pembayaran Tidak Lengkap', 'Mohon masukkan jumlah uang yang diterima.');
-            return;
-        } else if (receivedAmount < total) {
-            showWarningAlert('Uang Tidak Cukup', `Uang yang diterima kurang dari total pembayaran. Kurang: ${formatCurrency(total - receivedAmount)}`);
+            alert('Mohon lengkapi jumlah pembayaran!');
             return;
         }
 
@@ -467,9 +464,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Jika metode pembayaran QRIS, set amountReceived sama dengan total
         const finalAmount = paymentMethod === 'QRIS' ? total : receivedAmount;
-
-        // Tampilkan loading alert
-        showLoadingAlert('Memproses pembayaran...');
 
         fetch('/kasir/checkout', {
             method: 'POST',
@@ -486,56 +480,37 @@ document.addEventListener('DOMContentLoaded', function () {
                 orderItems,
             }),
         })
-            .then(response => {
-                // Tutup loading alert
-                closeLoadingAlert();
-                
-                console.log('Response status:', response.status);
-                console.log('Response headers:', response.headers);
-                
-                // Cek status response
-                if (!response.ok) {
-                    return response.text().then(text => {
-                        console.error('Error response text:', text);
-                        throw new Error(`HTTP error! status: ${response.status} - ${text}`);
-                    });
-                }
-                
-                // Cek content type
-                const contentType = response.headers.get('content-type');
-                console.log('Content-Type:', contentType);
-                
-                if (!contentType || !contentType.includes('application/json')) {
-                    return response.text().then(text => {
-                        console.error('Non-JSON response:', text);
-                        throw new Error('Response bukan JSON yang valid: ' + text.substring(0, 100));
-                    });
-                }
-                
-                return response.json();
-            })
+            .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    showSuccessAlert(paymentMethod, data.penjualan_id, total);
+                    if (paymentMethod === 'QRIS') {
+                        alert('Transaksi berhasil! Silahkan scan QR code untuk melakukan pembayaran.');
+                    } else {
+                        alert('Transaksi berhasil!');
+                    }
+                    
+                    // Buka struk dalam tab baru
+                    if (data.penjualan_id) {
+                        const printWindow = window.open(`/kasir/print/${data.penjualan_id}`, '_blank');
+                        if (printWindow) {
+                            // Reload halaman setelah struk dibuka
+                            setTimeout(() => {
+                                window.location.reload();
+                            }, 1000);
+                        } else {
+                            alert('Popup diblokir oleh browser. Mohon izinkan popup untuk mencetak struk.');
+                            window.location.reload();
+                        }
+                    } else {
+                        window.location.reload();
+                    }
                 } else {
-                    showErrorAlert('Transaksi gagal: ' + (data.message || 'Kesalahan tidak diketahui'));
+                    alert('Transaksi gagal: ' + data.message);
                 }
             })
             .catch(error => {
-                console.error('Error detail:', error);
-                
-                // Tampilkan pesan error yang lebih spesifik
-                let errorMessage = 'Terjadi kesalahan saat memproses transaksi.';
-                
-                if (error.message.includes('HTTP error')) {
-                    errorMessage = 'Server error. Silakan coba lagi.';
-                } else if (error.message.includes('JSON')) {
-                    errorMessage = 'Response server tidak valid. Transaksi mungkin berhasil, silakan cek riwayat transaksi.';
-                } else if (error.message.includes('Failed to fetch')) {
-                    errorMessage = 'Koneksi terputus. Silakan cek koneksi internet Anda.';
-                }
-                
-                showErrorAlert(errorMessage);
+                console.error('Error:', error);
+                alert('Terjadi kesalahan saat memproses transaksi.');
             });
     });
 
@@ -682,290 +657,3 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // Kode untuk tab prescription dan compounding sudah digabungkan ke event listener di atas
-
-// Fungsi untuk menampilkan alert sukses yang modern
-function showSuccessAlert(paymentMethod, penjualanId, total) {
-    // Buat overlay
-    const overlay = document.createElement('div');
-    overlay.className = 'success-alert-overlay';
-    overlay.innerHTML = `
-        <div class="success-alert-modal">
-            <div class="success-alert-header">
-                <div class="success-icon">
-                    <svg width="60" height="60" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="12" cy="12" r="10" fill="#4CAF50"/>
-                        <path d="M9 12l2 2 4-4" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                </div>
-                <h2>Transaksi Berhasil!</h2>
-                <p class="success-message">
-                    ${paymentMethod === 'QRIS' 
-                        ? 'Silahkan scan QR code untuk melakukan pembayaran' 
-                        : 'Pembayaran telah berhasil diproses'}
-                </p>
-            </div>
-            
-            <div class="success-alert-body">
-                <div class="transaction-details">
-                    <div class="detail-row">
-                        <span>Total Pembayaran:</span>
-                        <span class="amount">${formatCurrency(total)}</span>
-                    </div>
-                    <div class="detail-row">
-                        <span>Metode Pembayaran:</span>
-                        <span class="payment-method">${paymentMethod}</span>
-                    </div>
-                    <div class="detail-row">
-                        <span>Waktu Transaksi:</span>
-                        <span>${new Date().toLocaleString('id-ID')}</span>
-                    </div>
-                </div>
-                
-                ${paymentMethod === 'QRIS' ? `
-                    <div class="qris-section">
-                        <div class="qris-placeholder">
-                            <div class="qr-icon">📱</div>
-                            <p>QR Code akan ditampilkan di struk</p>
-                        </div>
-                    </div>
-                ` : ''}
-            </div>
-            
-            <div class="success-alert-footer">
-                <button class="btn-print" onclick="printStruk(${penjualanId})">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 14h12v8H6v-8z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                    Cetak Struk
-                </button>
-                <button class="btn-continue" onclick="closeSuccessAlert()">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                    Lanjut Transaksi
-                </button>
-            </div>
-        </div>
-    `;
-    
-    document.body.appendChild(overlay);
-    
-    // Animasi masuk
-    setTimeout(() => {
-        overlay.classList.add('show');
-    }, 10);
-    
-    // Auto close setelah 10 detik jika tidak ada aksi
-    setTimeout(() => {
-        if (document.body.contains(overlay)) {
-            closeSuccessAlert();
-        }
-    }, 10000);
-}
-
-// Fungsi untuk menampilkan alert error yang modern
-function showErrorAlert(message) {
-    const overlay = document.createElement('div');
-    overlay.className = 'error-alert-overlay';
-    overlay.innerHTML = `
-        <div class="error-alert-modal">
-            <div class="error-alert-header">
-                <div class="error-icon">
-                    <svg width="60" height="60" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="12" cy="12" r="10" fill="#dc3545"/>
-                        <path d="M15 9l-6 6M9 9l6 6" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                </div>
-                <h2>Transaksi Gagal</h2>
-                <p class="error-message">${message}</p>
-            </div>
-            
-            <div class="error-alert-footer">
-                <button class="btn-retry" onclick="closeErrorAlert()">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M1 4v6h6M23 20v-6h-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M20.49 9A9 9 0 005.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 013.51 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                    Coba Lagi
-                </button>
-            </div>
-        </div>
-    `;
-    
-    document.body.appendChild(overlay);
-    
-    // Animasi masuk
-    setTimeout(() => {
-        overlay.classList.add('show');
-    }, 10);
-}
-
-// Fungsi untuk menutup alert sukses
-function closeSuccessAlert() {
-    const overlay = document.querySelector('.success-alert-overlay');
-    if (overlay) {
-        overlay.classList.add('hide');
-        setTimeout(() => {
-            overlay.remove();
-            window.location.reload();
-        }, 300);
-    }
-}
-
-// Fungsi untuk menutup alert error
-function closeErrorAlert() {
-    const overlay = document.querySelector('.error-alert-overlay');
-    if (overlay) {
-        overlay.classList.add('hide');
-        setTimeout(() => {
-            overlay.remove();
-        }, 300);
-    }
-}
-
-// Fungsi untuk menampilkan warning alert
-function showWarningAlert(title, message) {
-    const overlay = document.createElement('div');
-    overlay.className = 'warning-alert-overlay';
-    overlay.innerHTML = `
-        <div class="warning-alert-modal">
-            <div class="warning-alert-header">
-                <div class="warning-icon">
-                    <svg width="60" height="60" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="12" cy="12" r="10" fill="#ff9800"/>
-                        <path d="M12 8v4M12 16h.01" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                </div>
-                <h2>${title}</h2>
-                <p class="warning-message">${message}</p>
-            </div>
-            
-            <div class="warning-alert-footer">
-                <button class="btn-ok" onclick="closeWarningAlert()">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                    Mengerti
-                </button>
-            </div>
-        </div>
-    `;
-    
-    document.body.appendChild(overlay);
-    
-    // Animasi masuk
-    setTimeout(() => {
-        overlay.classList.add('show');
-    }, 10);
-    
-    // Auto close setelah 5 detik
-    setTimeout(() => {
-        if (document.body.contains(overlay)) {
-            closeWarningAlert();
-        }
-    }, 5000);
-}
-
-// Fungsi untuk menampilkan info alert
-function showInfoAlert(title, message) {
-    const overlay = document.createElement('div');
-    overlay.className = 'info-alert-overlay';
-    overlay.innerHTML = `
-        <div class="info-alert-modal">
-            <div class="info-alert-header">
-                <div class="info-icon">
-                    <svg width="60" height="60" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="12" cy="12" r="10" fill="#2196F3"/>
-                        <path d="M12 16v-4M12 8h.01" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                </div>
-                <h2>${title}</h2>
-                <p class="info-message">${message}</p>
-            </div>
-            
-            <div class="info-alert-footer">
-                <button class="btn-ok-info" onclick="closeInfoAlert()">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                    OK
-                </button>
-            </div>
-        </div>
-    `;
-    
-    document.body.appendChild(overlay);
-    
-    // Animasi masuk
-    setTimeout(() => {
-        overlay.classList.add('show');
-    }, 10);
-}
-
-// Fungsi untuk menutup warning alert
-function closeWarningAlert() {
-    const overlay = document.querySelector('.warning-alert-overlay');
-    if (overlay) {
-        overlay.classList.add('hide');
-        setTimeout(() => {
-            overlay.remove();
-        }, 300);
-    }
-}
-
-// Fungsi untuk menutup info alert
-function closeInfoAlert() {
-    const overlay = document.querySelector('.info-alert-overlay');
-    if (overlay) {
-        overlay.classList.add('hide');
-        setTimeout(() => {
-            overlay.remove();
-        }, 300);
-    }
-}
-
-// Fungsi untuk mencetak struk
-function printStruk(penjualanId) {
-    if (penjualanId) {
-        const printWindow = window.open(`/kasir/print/${penjualanId}`, '_blank');
-        if (!printWindow) {
-            showErrorAlert('Popup diblokir oleh browser. Mohon izinkan popup untuk mencetak struk.');
-            return;
-        }
-        
-        // Tutup alert setelah membuka struk
-        setTimeout(() => {
-            closeSuccessAlert();
-        }, 1000);
-    }
-}
-
-// Fungsi untuk menampilkan loading alert
-function showLoadingAlert(message = 'Memproses transaksi...') {
-    const overlay = document.createElement('div');
-    overlay.className = 'loading-alert-overlay';
-    overlay.innerHTML = `
-        <div class="loading-alert-modal">
-            <div class="loading-spinner"></div>
-            <p class="loading-message">${message}</p>
-        </div>
-    `;
-    
-    document.body.appendChild(overlay);
-    
-    // Animasi masuk
-    setTimeout(() => {
-        overlay.classList.add('show');
-    }, 10);
-}
-
-// Fungsi untuk menutup loading alert
-function closeLoadingAlert() {
-    const overlay = document.querySelector('.loading-alert-overlay');
-    if (overlay) {
-        overlay.classList.add('hide');
-        setTimeout(() => {
-            overlay.remove();
-        }, 300);
-    }
-}

@@ -19,12 +19,7 @@
             <div class="flex justify-between items-center w-full">
                 <h1>Apotek Puri Pasir Putih</h1>
                 <div class="flex items-center">
-                    <a href="{{ route('qrcode.generate') }}" target="_blank" class="mr-4 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2m0 0H8m4 0h4m-4-8a3 3 0 100-6 3 3 0 000 6z" />
-                        </svg>
-                        QR Code Pelanggan
-                    </a>
+
                     <div class="relative ml-auto"> <!-- Tambahkan ml-auto di sini -->
                         <button id="profileButton"
                             class="flex items-center space-x-3 focus:outline-none hover:bg-gray-100 rounded-lg p-2">
@@ -34,7 +29,7 @@
                             </div>
                             <div class="text-right pr-2"> <!-- Tambahkan padding kanan -->
                                 <div class="font-bold">{{ auth()->user()->name }}</div>
-                                <div class="text-sm text-gray-600">{{ auth()->user()->role }}</div>
+                                <div class="text-sm text-gray-800">{{ auth()->user()->role }}</div>
                             </div>
                         </button>
 
@@ -182,7 +177,8 @@
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Komposisi Racikan</label>
                             <div class="mb-2">
-                                <input type="text" id="searchRacikan" class="w-full rounded-md border-gray-300 shadow-sm" 
+                                <input type="text" id="searchRacikan"
+                                    class="w-full rounded-md border-gray-300 shadow-sm"
                                     placeholder="Cari obat untuk komposisi...">
                             </div>
                             <div id="komposisi-container" class="space-y-2">
@@ -311,7 +307,7 @@
     <!-- Select2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-    <script src="{{ asset('js/kasir-fixed.js') }}"></script>
+    <script src="{{ asset('js/kasir.js') }}"></script>
 </body>
 
 </html>

@@ -5,6 +5,7 @@ class ApotekApp {
         this.filteredProducts = [];
         this.currentCategory = 'all';
         this.searchQuery = '';
+        this.isMobileMenuOpen = false;
         
         this.init();
     }
@@ -14,6 +15,7 @@ class ApotekApp {
         this.loadProducts();
         this.setupNavigation();
         this.setupScrollEffects();
+        this.setupMobileNav();
     }
     
     setupEventListeners() {
@@ -62,9 +64,6 @@ class ApotekApp {
         
         // Modal functionality
         this.setupModal();
-        
-        // Mobile navigation
-        this.setupMobileNav();
     }
     
     setupNavigation() {
@@ -142,20 +141,98 @@ class ApotekApp {
         const navMenu = document.getElementById('navMenu');
         
         if (navToggle && navMenu) {
-            navToggle.addEventListener('click', () => {
-                navMenu.classList.toggle('active');
-                navToggle.classList.toggle('active');
+            // Toggle menu when clicking the hamburger icon
+            navToggle.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.toggleMobileMenu();
+            });
+            
+            // Close menu when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!navMenu.contains(e.target) && !navToggle.contains(e.target) && this.isMobileMenuOpen) {
+                    this.closeMobileMenu();
+                }
             });
             
             // Close mobile menu when clicking on a link
             const navLinks = navMenu.querySelectorAll('.nav-link');
             navLinks.forEach(link => {
-                link.addEventListener('click', () => {
-                    navMenu.classList.remove('active');
-                    navToggle.classList.remove('active');
+                link.addEventListener('click', (e) => {
+                    this.closeMobileMenu();
+                    
+                    // Smooth scroll to section
+                    const targetId = link.getAttribute('href');
+                    if (targetId && targetId.startsWith('#') && targetId !== '#') {
+                        const targetElement = document.querySelector(targetId);
+                        if (targetElement) {
+                            e.preventDefault();
+                            const headerHeight = document.querySelector('.navbar')?.offsetHeight || 80;
+                            const targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset - headerHeight;
+                            
+                            window.scrollTo({
+                                top: targetPosition,
+                                behavior: 'smooth'
+                            });
+                        }
+                    }
                 });
             });
+            
+            // Handle resize events to reset mobile menu state
+            window.addEventListener('resize', this.debounce(() => {
+                if (window.innerWidth > 768 && this.isMobileMenuOpen) {
+                    this.closeMobileMenu();
+                }
+            }, 250));
+            
+            // Handle escape key to close mobile menu
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && this.isMobileMenuOpen) {
+                    this.closeMobileMenu();
+                }
+            });
         }
+    }
+    
+
+    
+    toggleMobileMenu() {
+        const navToggle = document.getElementById('navToggle');
+        const navMenu = document.getElementById('navMenu');
+        const overlay = document.querySelector('.nav-overlay');
+        
+        if (this.isMobileMenuOpen) {
+            this.closeMobileMenu();
+        } else {
+            this.openMobileMenu();
+        }
+    }
+    
+    openMobileMenu() {
+        const navToggle = document.getElementById('navToggle');
+        const navMenu = document.getElementById('navMenu');
+        
+        navMenu.classList.add('active');
+        navToggle.classList.add('active');
+        this.isMobileMenuOpen = true;
+        
+        // Focus management
+        const firstLink = navMenu.querySelector('.nav-link');
+        if (firstLink) {
+            setTimeout(() => firstLink.focus(), 100);
+        }
+    }
+    
+    closeMobileMenu() {
+        const navToggle = document.getElementById('navToggle');
+        const navMenu = document.getElementById('navMenu');
+        
+        navMenu.classList.remove('active');
+        navToggle.classList.remove('active');
+        this.isMobileMenuOpen = false;
+        
+        // Return focus to toggle button
+        navToggle.focus();
     }
     
     async loadProducts() {
@@ -279,10 +356,58 @@ class ApotekApp {
         
         // Close modal on Escape key
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && modal && modal.style.display === 'block') {
+            if (e.key === 'Escape' && modal && modal.style.display === 'flex') {
                 this.closeModal();
             }
         });
+        
+        // Handle mobile modal interactions
+        this.setupMobileModal();
+    }
+    
+    setupMobileModal() {
+        const modal = document.getElementById('productModal');
+        const modalContent = modal.querySelector('.modal-content');
+        
+        if (!modalContent) return;
+        
+        // Prevent modal content clicks from closing modal
+        modalContent.addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
+        
+        // Handle touch events for mobile swipe to close
+        let startY = 0;
+        let currentY = 0;
+        
+        modalContent.addEventListener('touchstart', (e) => {
+            startY = e.touches[0].clientY;
+        }, { passive: true });
+        
+        modalContent.addEventListener('touchend', (e) => {
+            const diff = startY - currentY;
+            const threshold = 100;
+            
+            // Close modal if swiped down significantly on mobile
+            if (diff > threshold && window.innerWidth <= 480) {
+                this.closeModal();
+            }
+        }, { passive: true });
+        
+        modalContent.addEventListener('touchmove', (e) => {
+            currentY = e.touches[0].clientY;
+            const diff = startY - currentY;
+            
+            // Allow scrolling within modal content
+            if (modalContent.scrollTop > 0 || diff < 0) {
+                return;
+            }
+            
+            // Prevent default only when trying to scroll up at the top
+            if (diff > 0 && modalContent.scrollTop === 0) {
+                e.preventDefault();
+            }
+        }, { passive: false });
     }
     
     showProductModal(product) {
@@ -293,11 +418,16 @@ class ApotekApp {
         this.updateModalContent(product);
         
         // Show modal
-        modal.style.display = 'block';
+        modal.style.display = 'flex';
         document.body.style.overflow = 'hidden';
         
         // Focus trap
         this.trapFocus(modal);
+        
+        // Add animation class
+        setTimeout(() => {
+            modal.classList.add('modal-active');
+        }, 10);
     }
     
     updateModalContent(product) {
@@ -346,8 +476,14 @@ class ApotekApp {
     closeModal() {
         const modal = document.getElementById('productModal');
         if (modal) {
-            modal.style.display = 'none';
-            document.body.style.overflow = '';
+            // Remove animation class
+            modal.classList.remove('modal-active');
+            
+            // Hide modal after animation
+            setTimeout(() => {
+                modal.style.display = 'none';
+                document.body.style.overflow = '';
+            }, 300);
         }
     }
     
@@ -520,7 +656,7 @@ window.closeModal = function() {
 };
 
 window.contactPharmacist = function() {
-    const phoneNumber = '082311323121';
+    const phoneNumber = '6285179674249';
     const message = 'Halo, saya ingin berkonsultasi tentang obat yang tersedia di Apotek Puri Pasir Putih.';
     const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
@@ -529,7 +665,62 @@ window.contactPharmacist = function() {
 // Initialize app when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     window.apotekApp = new ApotekApp();
+    
+    // Prevent horizontal scrolling on mobile
+    preventHorizontalScroll();
+    
+    var modal = document.getElementById('productModal');
+    if (modal) {
+        modal.style.display = 'none';
+        modal.classList.remove('modal-active');
+        document.body.style.overflow = '';
+    }
 });
+
+// Function to prevent horizontal scrolling
+function preventHorizontalScroll() {
+    // Set viewport meta tag if not present
+    if (!document.querySelector('meta[name="viewport"]')) {
+        const viewport = document.createElement('meta');
+        viewport.name = 'viewport';
+        viewport.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no';
+        document.head.appendChild(viewport);
+    }
+    
+    // Prevent horizontal scroll on touch devices
+    document.addEventListener('touchmove', (e) => {
+        if (e.touches.length > 1) {
+            e.preventDefault();
+        }
+    }, { passive: false });
+    
+    // Prevent horizontal scroll on wheel events
+    document.addEventListener('wheel', (e) => {
+        if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
+            e.preventDefault();
+        }
+    }, { passive: false });
+    
+    // Ensure body doesn't overflow
+    document.body.style.overflowX = 'hidden';
+    document.documentElement.style.overflowX = 'hidden';
+    
+    // Fix any elements that might cause horizontal scroll
+    const fixOverflow = () => {
+        const elements = document.querySelectorAll('*');
+        elements.forEach(el => {
+            const rect = el.getBoundingClientRect();
+            if (rect.right > window.innerWidth) {
+                el.style.maxWidth = '100%';
+                el.style.overflowX = 'hidden';
+            }
+        });
+    };
+    
+    // Run on load and resize
+    fixOverflow();
+    window.addEventListener('resize', fixOverflow);
+}
 
 // Add some CSS for empty and error states
 const additionalStyles = `
@@ -606,6 +797,52 @@ const additionalStyles = `
         
         .nav-toggle.active span:nth-child(3) {
             transform: rotate(-45deg) translate(7px, -6px);
+        }
+    }
+    
+    /* Additional horizontal scroll prevention */
+    html, body {
+        overflow-x: hidden !important;
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+    
+    * {
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+    
+    .container, .nav-container, .hero-container, .about-content, .contact-content, .footer-content {
+        overflow-x: hidden !important;
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+    
+    @media (max-width: 768px) {
+        html, body {
+            overflow-x: hidden !important;
+            width: 100vw !important;
+            max-width: 100vw !important;
+        }
+        
+        .container {
+            max-width: 100% !important;
+            padding: 0 var(--spacing-3) !important;
+            overflow-x: hidden !important;
+        }
+    }
+    
+    @media (max-width: 480px) {
+        html, body {
+            overflow-x: hidden !important;
+            width: 100vw !important;
+            max-width: 100vw !important;
+        }
+        
+        .container {
+            max-width: 100% !important;
+            padding: 0 var(--spacing-2) !important;
+            overflow-x: hidden !important;
         }
     }
 `;

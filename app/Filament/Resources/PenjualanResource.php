@@ -117,29 +117,23 @@ class PenjualanResource extends Resource
                 // Kolom ini penting: nama kasir
                 TextColumn::make('user.name') // Pastikan ada relasi user() di model Penjualan
                     ->label('Kasir')
-                    ->searchable()
-                    ->sortable(),
+                    ->searchable(),
                 TextColumn::make('nama_pelanggan')
                     ->label('Pelanggan') // Bisa diganti labelnya
-                    ->searchable()
-                    ->sortable(),
+                    ->searchable(),
                 TextColumn::make('total_harga')
                     ->numeric()
-                    ->prefix('Rp')
-                    ->sortable(),
+                    ->prefix('Rp'),
                 TextColumn::make('bayar')
                     ->numeric()
                     ->prefix('Rp')
-                    ->label('Dibayar')
-                    ->sortable(),
+                    ->label('Dibayar'),
                 TextColumn::make('kembalian')
                     ->numeric()
-                    ->prefix('Rp')
-                    ->sortable(),
+                    ->prefix('Rp'),
                 TextColumn::make('metode_pembayaran')
                     ->label('Metode Bayar') // Label lebih singkat
-                    ->searchable()
-                    ->sortable(),
+                    ->searchable(),
             ])
             ->filters([
                 Filter::make('tanggal')
@@ -151,7 +145,6 @@ class PenjualanResource extends Resource
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([

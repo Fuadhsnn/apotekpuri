@@ -157,8 +157,26 @@ END;
         $pembelians = $this->cleanUtf8Data($pembelians);
         
         // Konversi data tanggal ke format yang benar
-        $dariTanggalFormatted = $dariTanggal ? (is_string($dariTanggal) ? Carbon::parse($dariTanggal)->format('d/m/Y') : $dariTanggal->format('d/m/Y')) : null;
-        $sampaiTanggalFormatted = $sampaiTanggal ? (is_string($sampaiTanggal) ? Carbon::parse($sampaiTanggal)->format('d/m/Y') : $sampaiTanggal->format('d/m/Y')) : null;
+        $dariTanggalFormatted = null;
+        $sampaiTanggalFormatted = null;
+        
+        if ($dariTanggal) {
+            try {
+                $dariTanggalFormatted = is_string($dariTanggal) ? Carbon::parse($dariTanggal)->format('d/m/Y') : $dariTanggal->format('d/m/Y');
+            } catch (\Exception $e) {
+                \Log::error('Error formatting dari_tanggal', ['error' => $e->getMessage(), 'tanggal' => $dariTanggal]);
+                $dariTanggalFormatted = is_string($dariTanggal) ? $dariTanggal : null;
+            }
+        }
+        
+        if ($sampaiTanggal) {
+            try {
+                $sampaiTanggalFormatted = is_string($sampaiTanggal) ? Carbon::parse($sampaiTanggal)->format('d/m/Y') : $sampaiTanggal->format('d/m/Y');
+            } catch (\Exception $e) {
+                \Log::error('Error formatting sampai_tanggal', ['error' => $e->getMessage(), 'tanggal' => $sampaiTanggal]);
+                $sampaiTanggalFormatted = is_string($sampaiTanggal) ? $sampaiTanggal : null;
+            }
+        }
         
         // Pastikan data yang dikirim ke view sudah dalam format yang benar
         $viewData = [

@@ -1,0 +1,12 @@
+Black Box Testing - Aplikasi Apotek Puri Pasir Putih
+
+| Nama Fungsi                | Skenario Pengujian                                                                 | Hasil yang Diharapkan                                      | Hasil Uji |
+|----------------------------|-----------------------------------------------------------------------------------|------------------------------------------------------------|-----------|
+| Menampilkan Daftar Pelanggan | Pengguna membuka halaman pelanggan                                               | Daftar pelanggan tampil dengan data yang benar              |           |
+| Menambah Pelanggan         | Pengguna mengisi form tambah pelanggan dengan data valid dan submit               | Data pelanggan baru tersimpan dan muncul di daftar          |           |
+| Edit Data Pelanggan        | Pengguna mengedit data pelanggan lalu menyimpan                                   | Data pelanggan terupdate sesuai perubahan                   |           |
+| Hapus Pelanggan            | Pengguna menghapus salah satu pelanggan                                           | Data pelanggan terhapus dari daftar                         |           |
+| Menampilkan Daftar Pembelian| Pengguna membuka halaman laporan pembelian                                       | Daftar pembelian tampil dengan data yang benar              |           |
+| Ekspor Laporan Pembelian   | Pengguna klik tombol ekspor laporan pembelian (misal ke PDF)                      | File PDF berhasil diunduh dan berisi data pembelian         |           |
+| Proses Transaksi Kasir     | Pengguna menginput transaksi pembelian di kasir dan submit                        | Transaksi tersimpan, stok berkurang, struk tampil/tercetak  |           |
+| Validasi Form Kosong       | Pengguna submit form dengan data kosong/tidak valid                               | Muncul pesan error validasi, data tidak tersimpan           |           |
