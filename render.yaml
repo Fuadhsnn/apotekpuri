@@ -1,0 +1,48 @@
+services:
+  - type: web
+    name: apotek-puri-pasir-putih
+    env: php
+    buildCommand: composer install --no-dev --optimize-autoloader
+    startCommand: vendor/bin/heroku-php-apache2 public/
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: false
+      - key: APP_KEY
+        generateValue: true
+      - key: APP_URL
+        value: https://apotek-puri-pasir-putih.onrender.com
+      - key: DB_CONNECTION
+        value: pgsql
+      - key: DB_HOST
+        fromDatabase:
+          name: apotek-puri-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: apotek-puri-db
+          property: port
+      - key: DB_DATABASE
+        fromDatabase:
+          name: apotek-puri-db
+          property: database
+      - key: DB_USERNAME
+        fromDatabase:
+          name: apotek-puri-db
+          property: username
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: apotek-puri-db
+          property: password
+      - key: CACHE_DRIVER
+        value: file
+      - key: SESSION_DRIVER
+        value: file
+      - key: QUEUE_DRIVER
+        value: sync
+
+databases:
+  - name: apotek-puri-db
+    databaseName: apotek_puri_db
+    user: apotek_puri_user 
